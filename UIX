@@ -637,7 +637,7 @@ function Chloex:Window(GuiConfig)
 	Main.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Main.BorderSizePixel = 0
 	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-	Main.Size = UDim2.new(0, DropShadowHolder.Size.X.Offset - 47, 0, DropShadowHolder.Size.Y.Offset - 47)
+	Main.Size = UDim2.new(1, -47, 1, -47)
 	Main.Name = "Main"
 	Main.Parent = DropShadow
 
@@ -890,6 +890,14 @@ function Chloex:Window(GuiConfig)
 	DecideFrame2.Parent = Main
 	DecideFrame2.AnchorPoint = Vector2.new(0, 1)
 	DecideFrame2.Size = UDim2.new(1, 0, 0, 1)
+
+	local function UpdateSeparator()
+		DecideFrame2.Position = UDim2.new(0, 0, 1, -UserFooter.AbsoluteSize.Y)
+	end
+
+	UpdateSeparator()
+	UserFooter:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateSeparator)
+
 	DecideFrame2.Position = UDim2.new(0, 0, 1, -UserFooter.Size.Y.Offset)
 
 	function GuiFunc:DestroyGui()
