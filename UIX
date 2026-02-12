@@ -755,8 +755,8 @@ function Chloex:Window(GuiConfig)
 	DecideSaparator.BackgroundTransparency = 0.85
 	DecideSaparator.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	DecideSaparator.BorderSizePixel = 0
-	DecideSaparator.Position = UDim2.new(0.91, 0, 0, -11)
-	DecideSaparator.Size = UDim2.new(0, 1, 0.95, 3)
+	DecideSaparator.Position = UDim2.new(1, -1, 0, 38)
+	DecideSaparator.Size = UDim2.new(0, 1, 1, -74)
 	DecideSaparator.Rotation = 0
 	DecideSaparator.Name = "DecideSaparator"
 	DecideSaparator.Parent = LayersTab
@@ -883,13 +883,22 @@ function Chloex:Window(GuiConfig)
 		Headshot.Image = content
 	end)
 
-	DecideSaparator.AnchorPoint = Vector2.new(1, 0)
-	DecideSaparator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	DecideSaparator.BackgroundTransparency = 0.85
-	DecideSaparator.BorderSizePixel = 0
-	DecideSaparator.Position = UDim2.new(1, -1, 0, 38)
-	DecideSaparator.Size = UDim2.new(0, 1, 1, -74)
-	DecideSaparator.Parent = LayersTab
+	DecideFrame2.Name = "DecideFrame2"
+	DecideFrame2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	DecideFrame2.BackgroundTransparency = 0.85
+	DecideFrame2.BorderSizePixel = 0
+	DecideFrame2.Parent = Main
+	DecideFrame2.AnchorPoint = Vector2.new(0, 1)
+	DecideFrame2.Size = UDim2.new(1, 0, 0, 1)
+
+	local function UpdateSeparator()
+		DecideFrame2.Position = UDim2.new(0, 0, 1, -UserFooter.AbsoluteSize.Y)
+	end
+
+	UpdateSeparator()
+	UserFooter:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateSeparator)
+
+	DecideFrame2.Position = UDim2.new(0, 0, 1, -UserFooter.Size.Y.Offset)
 
 	function GuiFunc:DestroyGui()
 		if CoreGui:FindFirstChild("Chloeex") then
