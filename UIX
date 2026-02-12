@@ -1456,7 +1456,9 @@ function Chloex:Window(GuiConfig)
 			end
 
 			local function UpdateSizeSection()
-				if not OpenSection then return end
+				if not OpenSection then
+					return
+				end
 				SectionTitle.TextColor3 = COLOR_OPEN
 
 				local SectionSizeY = 30
@@ -1466,9 +1468,10 @@ function Chloex:Window(GuiConfig)
 					end
 				end
 
-				TweenService:Create(FeatureFrame, TweenInfo.new(0.3), {Rotation = 90}):Play()
-				TweenService:Create(Section, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, SectionSizeY)}):Play()
-				TweenService:Create(SectionAdd, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, SectionSizeY - 30)}):Play()
+				TweenService:Create(FeatureFrame, TweenInfo.new(0.3), { Rotation = 90 }):Play()
+				TweenService:Create(Section, TweenInfo.new(0.3), { Size = UDim2.new(1, 0, 0, SectionSizeY) }):Play()
+				TweenService:Create(SectionAdd, TweenInfo.new(0.3), { Size = UDim2.new(1, 0, 0, SectionSizeY - 30) })
+					:Play()
 
 				task.wait(0.3)
 				UpdateSizeScroll()
@@ -1485,9 +1488,9 @@ function Chloex:Window(GuiConfig)
 				SectionButton.Activated:Connect(function()
 					if OpenSection then
 						SectionTitle.TextColor3 = COLOR_NORMAL
-						TweenService:Create(FeatureFrame, TweenInfo.new(0.3), {Rotation = 0}):Play()
-						TweenService:Create(Section, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 30)}):Play()
-						TweenService:Create(SectionAdd, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+						TweenService:Create(FeatureFrame, TweenInfo.new(0.3), { Rotation = 0 }):Play()
+						TweenService:Create(Section, TweenInfo.new(0.3), { Size = UDim2.new(1, 0, 0, 30) }):Play()
+						TweenService:Create(SectionAdd, TweenInfo.new(0.3), { Size = UDim2.new(1, 0, 0, 0) }):Play()
 						OpenSection = false
 						task.wait(0.3)
 						UpdateSizeScroll()
@@ -1500,9 +1503,6 @@ function Chloex:Window(GuiConfig)
 
 			SectionAdd.ChildAdded:Connect(UpdateSizeSection)
 			SectionAdd.ChildRemoved:Connect(UpdateSizeSection)
-
-			return SectionAdd
-		end
 
 			local Items = {}
 			local CountItem = 0
