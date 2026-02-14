@@ -1621,7 +1621,7 @@ function Chloex:Window(GuiConfig)
 				local Panel = Instance.new("Frame")
 				Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				Panel.BackgroundTransparency = 0
-				Panel.Size = UDim2.new(1, 0, 0, 250)
+				Panel.Size = UDim2.new(1, 0, 0, 50)
 				Panel.LayoutOrder = CountItem
 				Panel.Parent = SectionAdd
 
@@ -1631,11 +1631,32 @@ function Chloex:Window(GuiConfig)
 
 				local UIGradient = Instance.new("UIGradient")
 				UIGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(210, 40, 40)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 210, 160)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 127)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 170, 127)),
 				})
 				UIGradient.Rotation = 90
 				UIGradient.Parent = Panel
+
+				local UgphoneIcon = Instance.new("ImageLabel")
+				UgphoneIcon.BackgroundTransparency = 1
+				UgphoneIcon.Position = (0, 5, 0, 0)
+				UgphoneIcon.Size = (0, 50, 0, 50)
+				Ugphone.Parent = Panel
+
+				local Ugphone = Instance.new("TextLabel")
+				Ugphone.BackgroundTransparency = 1
+				Ugphone.Position = (0, 170, 0, 5)
+				Ugphone.Size = (0, 10, 0, 30)
+				Ugphone.Parent = Panel
+				local UgphoneStroke = Instance.new("UIStroke", Ugphone).Thickness = 1
+
+				local UgphoneContent = Instance.new("TextLabel")
+				UgphoneContent.BackgroundTransparency = 1
+				UgphoneContent.Position = (0, 170, 0 , 23) 
+				UgphoneContent.Size = (0, 120, 0, 30)
+				UgphoneContent.Parent = Panel
+				local UgphoneStroke2 = Instance.new("UIStroke", UgphoneContent).Thickness = 1
+
 
 				return Panel
 			end
