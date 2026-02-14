@@ -1621,52 +1621,55 @@ function Chloex:Window(GuiConfig)
 				local Panel = Instance.new("Frame")
 				Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				Panel.BackgroundTransparency = 0
-				Panel.Size = UDim2.new(1, 0, 0, 60)
+				Panel.Size = UDim2.new(1, 0, 0, 70)
 				Panel.LayoutOrder = CountItem
 				Panel.Parent = SectionAdd
 
 				local UICorner = Instance.new("UICorner")
-				UICorner.CornerRadius = UDim.new(0, 8)
+				UICorner.CornerRadius = UDim.new(0, 10)
 				UICorner.Parent = Panel
 
 				local UIGradient = Instance.new("UIGradient")
 				UIGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 127)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 170, 127)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 95, 120)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 165, 115)),
 				})
-				UIGradient.Rotation = 90
+				UIGradient.Rotation = 45
 				UIGradient.Parent = Panel
 
 				local UgphoneIcon = Instance.new("ImageLabel")
 				UgphoneIcon.BackgroundTransparency = 1
-				UgphoneIcon.Position = UDim2.new(0, 5, 0, 5)
-				UgphoneIcon.Size = UDim2.new(0, 50, 0, 50)
+				UgphoneIcon.Position = UDim2.new(0, 12, 0.5, -22)
+				UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
 				UgphoneIcon.Image = "rbxassetid://92537239062015"
 				UgphoneIcon.Parent = Panel
 
 				local Ugphone = Instance.new("TextLabel")
 				Ugphone.BackgroundTransparency = 1
-				Ugphone.Position = UDim2.new(0, 65, 0, 5)
-				Ugphone.Size = UDim2.new(0, 150, 0, 20)
-				Ugphone.Text = "24/7 AFK, Stable, Smooth For Roblox Farming"
+				Ugphone.Position = UDim2.new(0, 70, 0, 12)
+				Ugphone.Size = UDim2.new(1, -80, 0, 24)
+				Ugphone.Font = Enum.Font.MontserratBold
+				Ugphone.TextSize = 16
+				Ugphone.TextWrapped = true
+				Ugphone.TextXAlignment = Enum.TextXAlignment.Left
+				Ugphone.TextYAlignment = Enum.TextYAlignment.Center
 				Ugphone.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Ugphone.Text = "UgPhone Android CloudPhone"
 				Ugphone.Parent = Panel
-
-				local UgphoneStroke = Instance.new("UIStroke")
-				UgphoneStroke.Thickness = 1
-				UgphoneStroke.Parent = Ugphone
 
 				local UgphoneContent = Instance.new("TextLabel")
 				UgphoneContent.BackgroundTransparency = 1
-				UgphoneContent.Position = UDim2.new(0, 65, 0, 28)
-				UgphoneContent.Size = UDim2.new(0, 200, 0, 20)
-				UgphoneContent.Text = "Content Here"
+				UgphoneContent.Position = UDim2.new(0, 70, 0, 36)
+				UgphoneContent.Size = UDim2.new(1, -80, 0, 20)
+				UgphoneContent.Font = Enum.Font.Montserrat
+				UgphoneContent.TextSize = 13
+				UgphoneContent.TextWrapped = true
+				UgphoneContent.TextXAlignment = Enum.TextXAlignment.Left
+				UgphoneContent.TextYAlignment = Enum.TextYAlignment.Top
+				UgphoneContent.TextTransparency = 0.15
 				UgphoneContent.TextColor3 = Color3.fromRGB(255, 255, 255)
+				UgphoneContent.Text = "24/7 AFK, Stable, Smooth For Roblox Farming"
 				UgphoneContent.Parent = Panel
-
-				local UgphoneStroke2 = Instance.new("UIStroke")
-				UgphoneStroke2.Thickness = 1
-				UgphoneStroke2.Parent = UgphoneContent
 
 				return Panel
 			end
