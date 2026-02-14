@@ -1675,7 +1675,7 @@ function Chloex:Window(GuiConfig)
 
 				local DiscordButton = Instance.new("TextButton")
 				DiscordButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
-				DiscordButton.Position = UDim2.new(0, Padding, 1, -55)
+				DiscordButton.Position = UDim2.new(0, Padding, 1, -45)
 				DiscordButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				DiscordButton.BackgroundTransparency = 0.85
 				DiscordButton.Text = "Discord Ugphone"
@@ -1691,7 +1691,7 @@ function Chloex:Window(GuiConfig)
 
 				local LinkButton = Instance.new("TextButton")
 				LinkButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
-				LinkButton.Position = UDim2.new(0.5, Gap / 2, 1, -55)
+				LinkButton.Position = UDim2.new(0.5, Gap / 2, 1, -45)
 				LinkButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				LinkButton.BackgroundTransparency = 0.85
 				LinkButton.Text = "Link Ugphone"
