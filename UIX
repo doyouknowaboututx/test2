@@ -1631,8 +1631,8 @@ function Chloex:Window(GuiConfig)
 
 				local UIGradient = Instance.new("UIGradient")
 				UIGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 95, 120)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 165, 115)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 160, 190)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 150)),
 				})
 				UIGradient.Rotation = 45
 				UIGradient.Parent = Panel
