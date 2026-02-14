@@ -1616,63 +1616,62 @@ function Chloex:Window(GuiConfig)
 			end
 
 			function Items:AddPanel(PanelConfig)
-				PanelConfig = PanelConfig or {}
+	PanelConfig = PanelConfig or {}
 
-				local Panel = Instance.new("Frame")
-				Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Panel.BackgroundTransparency = 0
-				Panel.Size = UDim2.new(1, 0, 0, 70)
-				Panel.LayoutOrder = CountItem
-				Panel.Parent = SectionAdd
+	local Panel = Instance.new("Frame")
+	Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Panel.BackgroundTransparency = 0
+	Panel.Size = UDim2.new(1, 0, 0, 70)
+	Panel.LayoutOrder = CountItem
+	Panel.Parent = SectionAdd
 
-				local UICorner = Instance.new("UICorner")
-				UICorner.CornerRadius = UDim.new(0, 10)
-				UICorner.Parent = Panel
+	local UICorner = Instance.new("UICorner")
+	UICorner.CornerRadius = UDim.new(0, 10)
+	UICorner.Parent = Panel
 
-				local UIGradient = Instance.new("UIGradient")
-				UIGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 160, 190)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 150)),
-				})
-				UIGradient.Rotation = 45
-				UIGradient.Parent = Panel
+	local UIGradient = Instance.new("UIGradient")
+	UIGradient.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 127)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 170, 127)),
+	})
+	UIGradient.Rotation = 90
+	UIGradient.Parent = Panel
 
-				local UgphoneIcon = Instance.new("ImageLabel")
-				UgphoneIcon.BackgroundTransparency = 1
-				UgphoneIcon.Position = UDim2.new(0, 12, 0.5, -22)
-				UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
-				UgphoneIcon.Image = "rbxassetid://92537239062015"
-				UgphoneIcon.Parent = Panel
+	local UgphoneIcon = Instance.new("ImageLabel")
+	UgphoneIcon.BackgroundTransparency = 1
+	UgphoneIcon.Position = UDim2.new(0, 12, 0.5, -22)
+	UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
+	UgphoneIcon.Image = "rbxassetid://92537239062015"
+	UgphoneIcon.Parent = Panel
 
-				local Ugphone = Instance.new("TextLabel")
-				Ugphone.BackgroundTransparency = 1
-				Ugphone.Position = UDim2.new(0, 70, 0, 12)
-				Ugphone.Size = UDim2.new(1, -80, 0, 24)
-				Ugphone.Font = Enum.Font.MontserratBold
-				Ugphone.TextSize = 16
-				Ugphone.TextWrapped = true
-				Ugphone.TextXAlignment = Enum.TextXAlignment.Left
-				Ugphone.TextYAlignment = Enum.TextYAlignment.Center
-				Ugphone.TextColor3 = Color3.fromRGB(255, 255, 255)
-				Ugphone.Text = "UgPhone Android CloudPhone"
-				Ugphone.Parent = Panel
+	local Ugphone = Instance.new("TextLabel")
+	Ugphone.BackgroundTransparency = 1
+	Ugphone.Position = UDim2.new(0, 70, 0, 12)
+	Ugphone.Size = UDim2.new(1, -80, 0, 24)
+	Ugphone.Font = Enum.Font.MontserratBold
+	Ugphone.TextSize = 16
+	Ugphone.TextWrapped = true
+	Ugphone.TextXAlignment = Enum.TextXAlignment.Left
+	Ugphone.TextYAlignment = Enum.TextYAlignment.Center
+	Ugphone.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Ugphone.Text = "UgPhone Android CloudPhone"
+	Ugphone.Parent = Panel
 
-				local UgphoneContent = Instance.new("TextLabel")
-				UgphoneContent.BackgroundTransparency = 1
-				UgphoneContent.Position = UDim2.new(0, 70, 0, 36)
-				UgphoneContent.Size = UDim2.new(1, -80, 0, 20)
-				UgphoneContent.Font = Enum.Font.Montserrat
-				UgphoneContent.TextSize = 13
-				UgphoneContent.TextWrapped = true
-				UgphoneContent.TextXAlignment = Enum.TextXAlignment.Left
-				UgphoneContent.TextYAlignment = Enum.TextYAlignment.Top
-				UgphoneContent.TextTransparency = 0.15
-				UgphoneContent.TextColor3 = Color3.fromRGB(255, 255, 255)
-				UgphoneContent.Text = "24/7 AFK, Stable, Smooth For Roblox Farming"
-				UgphoneContent.Parent = Panel
+	local UgphoneContent = Instance.new("TextLabel")
+	UgphoneContent.BackgroundTransparency = 1
+	UgphoneContent.Position = UDim2.new(0, 70, 0, 36)
+	UgphoneContent.Size = UDim2.new(1, -80, 0, 20)
+	UgphoneContent.Font = Enum.Font.MontserratBold
+	UgphoneContent.TextSize = 15
+	UgphoneContent.TextWrapped = true
+	UgphoneContent.TextXAlignment = Enum.TextXAlignment.Left
+	UgphoneContent.TextYAlignment = Enum.TextYAlignment.Top
+	UgphoneContent.TextColor3 = Color3.fromRGB(255, 255, 255)
+	UgphoneContent.Text = "24/7 AFK, Stable, Smooth For Roblox Farming"
+	UgphoneContent.Parent = Panel
 
-				return Panel
-			end
+	return Panel
+end
 
 			function Items:AddButton(ButtonConfig)
 				ButtonConfig = ButtonConfig or {}
