@@ -1618,6 +1618,8 @@ function Chloex:Window(GuiConfig)
 			function Items:AddPanel(PanelConfig)
 				PanelConfig = PanelConfig or {}
 
+				local isChloe = PanelConfig.Type == "Chloe"
+
 				local Panel = Instance.new("Frame")
 				Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				Panel.BackgroundTransparency = 0
@@ -1630,82 +1632,116 @@ function Chloex:Window(GuiConfig)
 				UICorner.Parent = Panel
 
 				local UIGradient = Instance.new("UIGradient")
-				UIGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 114, 114)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 161, 135)),
-				})
+				if isChloe then
+					UIGradient.Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 200, 255)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 85, 255)),
+					})
+				else
+					UIGradient.Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 114, 114)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 161, 135)),
+					})
+				end
 				UIGradient.Rotation = 80
 				UIGradient.Parent = Panel
 
-				local UgphoneIcon = Instance.new("ImageLabel")
-				UgphoneIcon.BackgroundTransparency = 1
-				UgphoneIcon.Position = UDim2.new(0, 12, 0, 12)
-				UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
-				UgphoneIcon.Image = "rbxassetid://92537239062015"
-				UgphoneIcon.Parent = Panel
+				if isChloe then
+					local ChloeIcon = Instance.new("ImageLabel")
+					ChloeIcon.BackgroundTransparency = 1
+					ChloeIcon.Position = UDim2.new(0, 12, 0, 12)
+					ChloeIcon.Size = UDim2.new(0, 44, 0, 44)
+					ChloeIcon.Image = "rbxassetid://119058035877218"
+					ChloeIcon.Parent = Panel
+				else
+					local UgphoneIcon = Instance.new("ImageLabel")
+					UgphoneIcon.BackgroundTransparency = 1
+					UgphoneIcon.Position = UDim2.new(0, 12, 0, 12)
+					UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
+					UgphoneIcon.Image = "rbxassetid://92537239062015"
+					UgphoneIcon.Parent = Panel
+				end
 
-				local Ugphone = Instance.new("TextLabel")
-				Ugphone.BackgroundTransparency = 1
-				Ugphone.Position = UDim2.new(0, 70, 0, 12)
-				Ugphone.Size = UDim2.new(1, -80, 0, 24)
-				Ugphone.Font = Enum.Font.MontserratBold
-				Ugphone.TextSize = 16
-				Ugphone.TextWrapped = true
-				Ugphone.TextXAlignment = Enum.TextXAlignment.Left
-				Ugphone.TextYAlignment = Enum.TextYAlignment.Center
-				Ugphone.TextColor3 = Color3.fromRGB(255, 255, 255)
-				Ugphone.Text = "UgPhone Android CloudPhone"
-				Ugphone.Parent = Panel
+				local Title = Instance.new("TextLabel")
+				Title.BackgroundTransparency = 1
+				Title.Position = UDim2.new(0, 70, 0, 12)
+				Title.Size = UDim2.new(1, -80, 0, 24)
+				Title.Font = Enum.Font.MontserratBold
+				Title.TextSize = 16
+				Title.TextWrapped = true
+				Title.TextXAlignment = Enum.TextXAlignment.Left
+				Title.TextYAlignment = Enum.TextYAlignment.Center
+				Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Title.Text = isChloe and "Chloe Info" or "UgPhone Android CloudPhone"
+				Title.Parent = Panel
 
-				local UgphoneContent = Instance.new("TextLabel")
-				UgphoneContent.BackgroundTransparency = 1
-				UgphoneContent.Position = UDim2.new(0, 70, 0, 36)
-				UgphoneContent.Size = UDim2.new(1, -80, 0, 20)
-				UgphoneContent.Font = Enum.Font.MontserratBold
-				UgphoneContent.TextSize = 15
-				UgphoneContent.TextWrapped = true
-				UgphoneContent.TextXAlignment = Enum.TextXAlignment.Left
-				UgphoneContent.TextYAlignment = Enum.TextYAlignment.Top
-				UgphoneContent.TextColor3 = Color3.fromRGB(255, 255, 255)
-				UgphoneContent.Text = "24/7 AFK, Stable, Smooth For Roblox Farming"
-				UgphoneContent.Parent = Panel
+				local Content = Instance.new("TextLabel")
+				Content.BackgroundTransparency = 1
+				Content.Position = UDim2.new(0, 70, 0, 36)
+				Content.Size = UDim2.new(1, -80, 0, 20)
+				Content.Font = Enum.Font.MontserratBold
+				Content.TextSize = 15
+				Content.TextWrapped = true
+				Content.TextXAlignment = Enum.TextXAlignment.Left
+				Content.TextYAlignment = Enum.TextYAlignment.Top
+				Content.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Content.Text = isChloe and "Official Discord Chloe" or "24/7 AFK, Stable, Smooth For Roblox Farming"
+				Content.Parent = Panel
 
 				local Padding = 12
 				local Gap = 8
 
-				local DiscordButton = Instance.new("TextButton")
-				DiscordButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
-				DiscordButton.Position = UDim2.new(0, Padding, 1, -45)
-				DiscordButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				DiscordButton.BackgroundTransparency = 0.85
-				DiscordButton.Text = "Discord Ugphone"
-				DiscordButton.Font = Enum.Font.MontserratBold
-				DiscordButton.TextSize = 13
-				DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-				DiscordButton.Parent = Panel
-				Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 8)
+				if isChloe then
+					local Button = Instance.new("TextButton")
+					Button.Size = UDim2.new(1, -Padding * 2, 0, 30)
+					Button.Position = UDim2.new(0, Padding, 1, -45)
+					Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Button.BackgroundTransparency = 0.85
+					Button.Text = "Copy Discord"
+					Button.Font = Enum.Font.MontserratBold
+					Button.TextSize = 13
+					Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+					Button.Parent = Panel
+					Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 8)
 
-				DiscordButton.MouseButton1Click:Connect(function()
-					setclipboard("https://discord.com/invite/ugphone-official")
-				end)
+					Button.MouseButton1Click:Connect(function()
+						setclipboard("https://discord.gg/ISI_LINK_KAMU")
+					end)
+				else
+					local DiscordButton = Instance.new("TextButton")
+					DiscordButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
+					DiscordButton.Position = UDim2.new(0, Padding, 1, -45)
+					DiscordButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					DiscordButton.BackgroundTransparency = 0.85
+					DiscordButton.Text = "Discord Ugphone"
+					DiscordButton.Font = Enum.Font.MontserratBold
+					DiscordButton.TextSize = 13
+					DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					DiscordButton.Parent = Panel
+					Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 8)
 
-				local LinkButton = Instance.new("TextButton")
-				LinkButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
-				LinkButton.Position = UDim2.new(0.5, Gap / 2, 1, -45)
-				LinkButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				LinkButton.BackgroundTransparency = 0.85
-				LinkButton.Text = "Link Ugphone"
-				LinkButton.Font = Enum.Font.MontserratBold
-				LinkButton.TextSize = 13
-				LinkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-				LinkButton.Parent = Panel
-				Instance.new("UICorner", LinkButton).CornerRadius = UDim.new(0, 8)
+					DiscordButton.MouseButton1Click:Connect(function()
+						setclipboard("https://discord.com/invite/ugphone-official")
+					end)
 
-				LinkButton.MouseButton1Click:Connect(function()
-					setclipboard(
-						"https://www.ugphone.com/toc-page/promotion/#/r?partner_id=61c46edd-49e6-0379-b03c-a1bd797557&invitation_code=chloex"
-					)
-				end)
+					local LinkButton = Instance.new("TextButton")
+					LinkButton.Size = UDim2.new(0.5, -Padding - Gap / 2, 0, 30)
+					LinkButton.Position = UDim2.new(0.5, Gap / 2, 1, -45)
+					LinkButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					LinkButton.BackgroundTransparency = 0.85
+					LinkButton.Text = "Link Ugphone"
+					LinkButton.Font = Enum.Font.MontserratBold
+					LinkButton.TextSize = 13
+					LinkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					LinkButton.Parent = Panel
+					Instance.new("UICorner", LinkButton).CornerRadius = UDim.new(0, 8)
+
+					LinkButton.MouseButton1Click:Connect(function()
+						setclipboard(
+							"https://www.ugphone.com/toc-page/promotion/#/r?partner_id=61c46edd-49e6-0379-b03c-a1bd797557&invitation_code=chloex"
+						)
+					end)
+				end
 
 				return Panel
 			end
