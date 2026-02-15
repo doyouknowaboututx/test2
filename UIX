@@ -880,27 +880,6 @@ function Chloex:Window(GuiConfig)
 		Headshot.Image = content
 	end)
 
-	local SideIcons = Instance.new("Frame")
-	SideIcons.Name = "SideIcons"
-	SideIcons.BackgroundTransparency = 1
-	SideIcons.Size = UDim2.new(0, 60, 1, 0)
-	SideIcons.Position = UDim2.new(1, -70, 0, 0)
-	SideIcons.Parent = UserFooter
-
-	local LeftIcon = Instance.new("ImageLabel")
-	LeftIcon.BackgroundTransparency = 1
-	LeftIcon.Size = UDim2.new(0, 20, 0, 20)
-	LeftIcon.Position = UDim2.new(0, 0, 0.5, -10)
-	LeftIcon.Image = "rbxassetid://92537239062015"
-	LeftIcon.Parent = SideIcons
-
-	local RightIcon = Instance.new("ImageLabel")
-	RightIcon.BackgroundTransparency = 1
-	RightIcon.Size = UDim2.new(0, 20, 0, 20)
-	RightIcon.Position = UDim2.new(0, 30, 0.5, -10)
-	RightIcon.Image = "rbxassetid://88326083956520"
-	RightIcon.Parent = SideIcons
-
 	DecideFrame2.Name = "DecideFrame2"
 	DecideFrame2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	DecideFrame2.BackgroundTransparency = 0.85
@@ -1643,7 +1622,7 @@ function Chloex:Window(GuiConfig)
 
 				local Panel = Instance.new("Frame")
 				Panel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Panel.BackgroundTransparency = 0
+				Panel.BackgroundTransparency = 0.1
 				Panel.Size = UDim2.new(1, 0, 0, 115)
 				Panel.LayoutOrder = CountItem
 				Panel.Parent = SectionAdd
@@ -1669,14 +1648,14 @@ function Chloex:Window(GuiConfig)
 
 				if isChloe then
 					local ChloeIcon = Instance.new("ImageLabel")
-					ChloeIcon.BackgroundTransparency = 0.1
+					ChloeIcon.BackgroundTransparency = 1
 					ChloeIcon.Position = UDim2.new(0, 12, 0, 12)
 					ChloeIcon.Size = UDim2.new(0, 44, 0, 44)
 					ChloeIcon.Image = "rbxassetid://95750353626660"
 					ChloeIcon.Parent = Panel
 				else
 					local UgphoneIcon = Instance.new("ImageLabel")
-					UgphoneIcon.BackgroundTransparency = 0.1
+					UgphoneIcon.BackgroundTransparency = 1
 					UgphoneIcon.Position = UDim2.new(0, 12, 0, 12)
 					UgphoneIcon.Size = UDim2.new(0, 44, 0, 44)
 					UgphoneIcon.Image = "rbxassetid://92537239062015"
