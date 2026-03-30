@@ -393,18 +393,24 @@ local StaffRoles = {
 local function logPlayer(plr, action)
     if not plr or plr==player then return end
     local success, roleName = pcall(function() return plr:GetRoleInGroup(GroupId) end)
-    if not success then roleName="Unknown" end
+    if not success then roleName="No Role" end
 
     local payload = {
-        username="Chloe X | Player Logger",
-        avatar_url="https://i.imgur.com/9afHGRy.jpeg",
-        embeds={{title="Player "..action, color=(action=="Join" and 5763719 or 16753920), fields={
-            {name="Player Detected", value=">>> "..action, inline=false},
-            {name="Display Name", value=">>> "..plr.DisplayName, inline=false},
-            {name="Username", value=">>> "..plr.Name, inline=false},
-            {name="Role", value=">>> "..(roleName~="" and roleName or "No Role"), inline=false},
-            {name="Date", value=">>> "..DateTime.now():ToIsoDate(), inline=false},
-        }, timestamp=DateTime.now():ToIsoDate()}}
+        username = "Chloe X Notifcation!",
+        avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
+        embeds = {{
+            title = "CHLOE X PLAYER CONTROLLER",
+            description = "Ding dong! Player ["..action.."] server here for full information!",
+            color = (action=="Join" and 5763719 or 16753920),
+            fields = {
+                {name="Name Player :", value=">>> "..plr.Name},
+                {name="Username Player :", value=">>> "..plr.DisplayName},
+                {name="Join Date :", value=">>> "..DateTime.now():ToIsoDate()},
+                {name="Rank Player :", value=">>> "..(StaffRoles[roleName] and roleName or "No Role")},
+                {name="Amount Player in Server", value=">>> "..#svc.Players:GetPlayers().."/20"},
+            },
+            timestamp = DateTime.now():ToIsoDate(),
+        }}
     }
 
     sendWebhook(getgenv().PlayerController or _G.PlayerController, payload)
