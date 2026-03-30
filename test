@@ -84,6 +84,7 @@ local FishNames = {
     { Name = "Elshark Gran Maja", Tier = Secret, Icon = "rbxassetid://115522161459382" },
     { Name = "Emerald Winter Whale", Tier = Secret, Icon = "rbxassetid://77578943978639" },
     { Name = "Frostborn Shark", Tier = Secret, Icon = "rbxassetid://125463067542850" },
+    { Name = "King Crab", Tier = Secret, Icon = "rbxassetid://136951139611035" },
     { Name = "Ghost Shark", Tier = Secret, Icon = "rbxassetid://102028503382077" },
     { Name = "Ghost Worm Fish", Tier = Secret, Icon = "rbxassetid://107896897205452" },
     { Name = "Giant Squid", Tier = Secret, Icon = "rbxassetid://135470649745250" },
@@ -302,7 +303,7 @@ local function sendFishWebhook(data)
                     inline = false,
                 },
                 {
-                    name = "Tier :",
+                    name = "Get Tier :",
                     value = ">>> " .. tostring(data.Tier or "Unknown"),
                     inline = false,
                 },
@@ -322,7 +323,7 @@ local function sendFishWebhook(data)
                     inline = false,
                 },
                 {
-                    name = "Rarity :",
+                    name = "Get Rarity :",
                     value = ">>> " .. tostring(data.Rarity or "Unknown"),
                     inline = false,
                 }
@@ -350,6 +351,11 @@ if remote and remote:IsA("RemoteEvent") then
 
         local data = parseFishMessage(message)
         if not data then
+            return
+        end
+
+        local fishInfo = getFishInfo(data.Fish)
+        if not fishInfo then
             return
         end
 
