@@ -390,65 +390,38 @@ local StaffRoles = {
 	["CC"] = true,
 }
 
-task.spawn(function()
-	while _G.AntiStaff do
-		for _, plr in ipairs(svc.Players:GetPlayers()) do
-			if plr ~= player then
-				local roleName = plr:GetRoleInGroup(GroupId)
+local function logPlayer(plr, action)
+    if not plr or plr==player then return end
+    local success, roleName = pcall(function() return plr:GetRoleInGroup(GroupId) end)
+    if not success then roleName="Unknown" end
 
-				if StaffRoles[roleName] then
-					local payload = {
-						username = "Chloe X | Staff Detector",
-						avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
-						embeds = {{
-							title = "Detected Staff!",
-							color = 16711680,
-							fields = {
-								{
-									name = "Player Detected",
-									value = ">>> " .. tostring(plr.Name),
-									inline = false,
-								},
-								{
-									name = "Role",
-									value = ">>> " .. tostring(roleName),
-									inline = false,
-								},
-								{
-									name = "Your Name",
-									value = ">>> " .. tostring(player.Name),
-									inline = false,
-								},
-								{
-									name = "UserId",
-									value = ">>> " .. tostring(plr.UserId),
-									inline = false,
-								},
-								{
-									name = "PlaceId",
-									value = ">>> " .. tostring(game.PlaceId),
-									inline = false,
-								},
-								{
-									name = "JobId",
-									value = ">>> " .. tostring(game.JobId),
-									inline = false,
-								}
-							},
-							timestamp = DateTime.now():ToIsoDate(),
-						}}
-					}
+    local payload = {
+        username="Chloe X | Player Logger",
+        avatar_url="https://i.imgur.com/9afHGRy.jpeg",
+        embeds={{title="Player "..action, color=(action=="Join" and 5763719 or 16753920), fields={
+            {name="Player Detected", value=">>> "..action, inline=false},
+            {name="Display Name", value=">>> "..plr.DisplayName, inline=false},
+            {name="Username", value=">>> "..plr.Name, inline=false},
+            {name="Role", value=">>> "..(roleName~="" and roleName or "No Role"), inline=false},
+            {name="Date", value=">>> "..DateTime.now():ToIsoDate(), inline=false},
+        }, timestamp=DateTime.now():ToIsoDate()}}
+    }
 
-					local webhookUrl = getgenv().PlayerController or _G.PlayerController
-					sendWebhook(webhookUrl, payload)
+    sendWebhook(getgenv().PlayerController or _G.PlayerController, payload)
 
-					player:Kick(
-						("Chloe Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName)
-					)
-					return
-				end
-			end
-		end
-		task.wait(1)
-	end
+    if action=="Join" and StaffRoles[roleName] then
+        player:Kick(("Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName))
+    end
+end
+
+for _, plr in ipairs(svc.Players:GetPlayers()) do
+    task.spawn(function() logPlayer(plr, "Join") end)
+end
+
+svc.Players.PlayerAdded:Connect(function(plr)
+    task.spawn(function() logPlayer(plr, "Join") end)
+end)
+
+svc.Players.PlayerRemoving:Connect(function(plr)
+    task.spawn(function() logPlayer(plr, "Leave") end)
 end)
