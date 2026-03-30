@@ -1,0 +1,360 @@
+local svc = {
+    Players = game:GetService("Players"),
+    HttpService = game:GetService("HttpService"),
+    RS = game:GetService("ReplicatedStorage"),
+}
+
+--## HTTP REQUEST SUPPORT
+local httpRequest = (syn and syn.request)
+    or (http and http.request)
+    or http_request
+    or (fluxus and fluxus.request)
+    or request
+
+if not httpRequest then
+    warn("HTTP Request not supported")
+    return
+end
+
+--## PLAYER
+local player = svc.Players.LocalPlayer
+
+--## MODULES
+local mods = {
+    Net = svc.RS.Packages._Index["sleitnick_net@0.2.0"].net,
+    Replion = require(svc.RS.Packages.Replion),
+}
+
+--## TIER
+local Secret = "Secret"
+local Forgotten = "Forgotten"
+
+--## CHECK HASH REMOTE NAME
+local function isHash(name)
+    local suffix = name:match("^[%u]+/(.+)$")
+    return suffix and #suffix == 64 and suffix:match("^[a-f0-9]+$")
+end
+
+--## REMOTE CACHE
+local chx = {}
+local children = mods.Net:GetChildren()
+
+for i, child in ipairs(children) do
+    if not isHash(child.Name) then
+        local nextChild = children[i + 1]
+
+        if nextChild and isHash(nextChild.Name) then
+            chx[child.Name] = nextChild
+        end
+    end
+end
+
+--## GET REMOTE EVENT
+local function RE(name)
+    return chx["RE/" .. name]
+end
+
+local api = {
+    Events = {
+        Notification = RE("DisplaySystemMessage"),
+    },
+}
+
+--## FISH DATABASE
+local FishNames = {
+    { Name = "1x1x1x1 Comet Shark", Tier = Secret, Icon = "rbxassetid://98046606623336" },
+    { Name = "1x1x1x1 Shark", Tier = Secret, Icon = "rbxassetid://126602140465429" },
+    { Name = "Ancient Lochness Monster", Tier = Secret, Icon = "rbxassetid://122849883484708" },
+    { Name = "Ancient Magma Whale", Tier = Secret, Icon = "rbxassetid://79419619363511" },
+    { Name = "Ancient Whale", Tier = Secret, Icon = "rbxassetid://106712272327597" },
+    { Name = "Blob Shark", Tier = Secret, Icon = "rbxassetid://120294742064292" },
+    { Name = "Bloodmoon Whale", Tier = Secret, Icon = "rbxassetid://113886190969614" },
+    { Name = "Bone Whale", Tier = Secret, Icon = "rbxassetid://99804145194043" },
+    { Name = "Bonemaw Tyrant", Tier = Secret, Icon = "rbxassetid://113238296585201" },
+    { Name = "Broken Heart Nessie", Tier = Secret, Icon = "rbxassetid://128778303459704" },
+    { Name = "Cosmic Mutant Shark", Tier = Secret, Icon = "rbxassetid://73059280090488" },
+    { Name = "Cryoshade Glider", Tier = Secret, Icon = "rbxassetid://107008051913908" },
+    { Name = "Crystal Crab", Tier = Secret, Icon = "rbxassetid://110188263756245" },
+    { Name = "Cursed Kraken", Tier = Secret, Icon = "rbxassetid://88584771745160" },
+    { Name = "Dead Zombie Shark", Tier = Secret, Icon = "rbxassetid://74502211632455" },
+    { Name = "Depthseeker Ray", Tier = Secret, Icon = "rbxassetid://92527448781061" },
+    { Name = "Eerie Shark", Tier = Secret, Icon = "rbxassetid://114252804065144" },
+    { Name = "ElRetro Gran Maja", Tier = Secret, Icon = "rbxassetid://87213487175221" },
+    { Name = "Elpirate Gran Maja", Tier = Secret, Icon = "rbxassetid://131441237084542" },
+    { Name = "Elshark Gran Maja", Tier = Secret, Icon = "rbxassetid://115522161459382" },
+    { Name = "Emerald Winter Whale", Tier = Secret, Icon = "rbxassetid://77578943978639" },
+    { Name = "Frostborn Shark", Tier = Secret, Icon = "rbxassetid://125463067542850" },
+    { Name = "Ghost Shark", Tier = Secret, Icon = "rbxassetid://102028503382077" },
+    { Name = "Ghost Worm Fish", Tier = Secret, Icon = "rbxassetid://107896897205452" },
+    { Name = "Giant Squid", Tier = Secret, Icon = "rbxassetid://135470649745250" },
+    { Name = "Gladiator Shark", Tier = Secret, Icon = "rbxassetid://131785277053113" },
+    { Name = "Great Christmas Whale", Tier = Secret, Icon = "rbxassetid://71302255255094" },
+    { Name = "Great Whale", Tier = Secret, Icon = "rbxassetid://110349456710432" },
+    { Name = "Icebreaker Whale", Tier = Secret, Icon = "rbxassetid://71622364014615" },
+    { Name = "Ketupat Whale", Tier = Secret, Icon = "rbxassetid://100322220107082" },
+    { Name = "King Jelly", Tier = Secret, Icon = "rbxassetid://104757933481327" },
+    { Name = "Krampus Shark", Tier = Secret, Icon = "rbxassetid://90833088805438" },
+    { Name = "Leviathan", Tier = Secret, Icon = "rbxassetid://121794505904244" },
+    { Name = "Lochness Monster", Tier = Secret, Icon = "rbxassetid://88964613838360" },
+    { Name = "Love Nessie", Tier = Secret, Icon = "rbxassetid://120503903398099" },
+    { Name = "Megalodon", Tier = Secret, Icon = "rbxassetid://126066407227328" },
+    { Name = "Monster Shark", Tier = Secret, Icon = "rbxassetid://109551787474599" },
+    { Name = "Mosasaur Shark", Tier = Secret, Icon = "rbxassetid://119021943786069" },
+    { Name = "Mutant Runic Koi", Tier = Secret, Icon = "rbxassetid://70864605663877" },
+    { Name = "Orca", Tier = Secret, Icon = "rbxassetid://120876783250189" },
+    { Name = "Pirate Megalodon", Tier = Secret, Icon = "rbxassetid://111717850876602" },
+    { Name = "Queen Crab", Tier = Secret, Icon = "rbxassetid://73709080100110" },
+    { Name = "Rainbow Comet Shark", Tier = Secret, Icon = "rbxassetid://121195842662298" },
+    { Name = "Robot Kraken", Tier = Secret, Icon = "rbxassetid://80927639907406" },
+    { Name = "Scare", Tier = Secret, Icon = "rbxassetid://76893887663677" },
+    { Name = "Sea Eater", Tier = Forgotten, Icon = "rbxassetid://94750467234464" },
+    { Name = "Skeleton Narwhal", Tier = Secret, Icon = "rbxassetid://72248976760148" },
+    { Name = "Starry Night Whale", Tier = Secret, Icon = "rbxassetid://105040588668498" },
+    { Name = "Strawberry Choc Megalodon", Tier = Secret, Icon = "rbxassetid://113501574324315" },
+    { Name = "Talon Serpent", Tier = Secret, Icon = "rbxassetid://108665275325646" },
+    { Name = "Thin Armor Shark", Tier = Secret, Icon = "rbxassetid://123540389497955" },
+    { Name = "Thunderzilla", Tier = Forgotten, Icon = "rbxassetid://100901086602309" },
+    { Name = "Viridis Lurker", Tier = Secret, Icon = "rbxassetid://104425720050620" },
+    { Name = "Wild Serpent", Tier = Secret, Icon = "rbxassetid://105102846577855" },
+    { Name = "Winter Frost Shark", Tier = Secret, Icon = "rbxassetid://139526906837161" },
+    { Name = "Worm Fish", Tier = Secret, Icon = "rbxassetid://88157067345872" },
+    { Name = "Zombie Megalodon", Tier = Secret, Icon = "rbxassetid://110861329686146" },
+    { Name = "Zombie Shark", Tier = Secret, Icon = "rbxassetid://118840558184490" },
+    --## TAMBAHIN MANUAL DISINI KALO ADA IKAN BARU
+}
+
+--## VARIANT DATABASE
+local Variants = {
+    "1x1x1x1",
+    "Albino",
+    "Arctic Frost",
+    "Bloodmoon",
+    "Color Burn",
+    "Corrupt",
+    "Crystalized",
+    "Cupid",
+    "Disco",
+    "Fairy Dust",
+    "Festive",
+    "Frozen",
+    "Galaxy",
+    "Gemstone",
+    "Ghost",
+    "Gold",
+    "Heartbreaker",
+    "Holographic",
+    "Leviathan Rage",
+    "Lightning",
+    "Midnight",
+    "Moon Fragment",
+    "Noob",
+    "Radioactive",
+    "Sandy",
+    "Stone",
+    --## TAMBAHIN MANUAL DISINI KALO ADA MUTASI BARU
+}
+
+--## SIZE DATABASE
+local Sizes = {
+    "Big",
+    "Shiny",
+    --## TAMBAHIN MANUAL DISINI KALO ADA SIZE BARU
+}
+
+--## GET THUMBNAIL URL FROM RBXASSETID
+local function getThumbnailURL(assetString)
+    local assetId = type(assetString) == "string" and assetString:match("rbxassetid://(%d+)")
+    if not assetId then
+        return nil
+    end
+
+    local apiUrl = string.format(
+        "https://thumbnails.roblox.com/v1/assets?assetIds=%s&type=Asset&size=420x420&format=Png",
+        assetId
+    )
+
+    local success, result = pcall(function()
+        local raw = game:HttpGet(apiUrl)
+        local decoded = svc.HttpService:JSONDecode(raw)
+        return decoded and decoded.data and decoded.data[1] and decoded.data[1].imageUrl
+    end)
+
+    if success then
+        return result
+    end
+
+    return nil
+end
+
+--## GET FISH INFO
+local function getFishInfo(fishName)
+    for _, fish in ipairs(FishNames) do
+        if fish.Name == fishName then
+            return fish
+        end
+    end
+    return nil
+end
+
+--## GET FISH IMAGE
+local function getFishImage(fishName)
+    local fishInfo = getFishInfo(fishName)
+    if not fishInfo or not fishInfo.Icon then
+        return nil
+    end
+
+    return getThumbnailURL(fishInfo.Icon)
+end
+
+--## SEND WEBHOOK
+local function sendWebhook(url, payload)
+    if not url or url == "" then
+        return
+    end
+
+    local success, err = pcall(function()
+        httpRequest({
+            Url = url,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json",
+            },
+            Body = svc.HttpService:JSONEncode(payload),
+        })
+    end)
+
+    if not success then
+        warn("Failed send webhook: " .. tostring(err))
+    end
+end
+
+--## PARSE FISH SERVER MESSAGE
+local function parseFishMessage(text)
+    text = text:gsub("<[^>]+>", "")
+    text = text:gsub("%[Server%]:%s*", "")
+
+    local username = text:match("^(.-) obtained")
+    local fullFish = text:match("obtained an? (.-) %(")
+    local weight = text:match("%((.-)%)")
+    local rarity = text:match("with an? (.-) [cC]hance!?")
+
+    if not fullFish then
+        fullFish = text:match("obtained an? (.+)")
+    end
+
+    if not username or not fullFish then
+        return nil
+    end
+
+    local sizeFound
+    for _, size in ipairs(Sizes) do
+        if fullFish:find(size, 1, true) then
+            sizeFound = size
+            fullFish = fullFish:gsub(size .. "%s*", "", 1)
+            break
+        end
+    end
+
+    local variantFound
+    for _, variant in ipairs(Variants) do
+        if fullFish:lower():find(variant:lower(), 1, true) then
+            variantFound = variant
+            fullFish = fullFish:gsub(variant .. "%s*", "", 1)
+            break
+        end
+    end
+
+    fullFish = fullFish:gsub("^%s+", ""):gsub("%s+$", "")
+
+    local fishInfo = getFishInfo(fullFish)
+
+    return {
+        Player = username,
+        Fish = fullFish,
+        Size = sizeFound,
+        Variant = variantFound,
+        Weight = weight,
+        Rarity = rarity,
+        Tier = fishInfo and fishInfo.Tier or "Unknown",
+        Icon = fishInfo and fishInfo.Icon or nil,
+    }
+end
+
+--## SEND FISH WEBHOOK
+local function sendFishWebhook(data)
+    local imageUrl = getFishImage(data.Fish) or "https://i.imgur.com/9afHGRy.jpeg"
+
+    local payload = {
+        username = "Chloe X | x8 Notification",
+        avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
+        embeds = {{
+            title = "CHLOE X FISHCAUGHT NOTIFICATION",
+            color = 47359,
+            fields = {
+                {
+                    name = "Name :",
+                    value = ">>> " .. tostring(data.Player or "Unknown"),
+                    inline = false,
+                },
+                {
+                    name = "Get Fish :",
+                    value = ">>> " .. tostring(data.Fish or "Unknown"),
+                    inline = false,
+                },
+                {
+                    name = "Tier :",
+                    value = ">>> " .. tostring(data.Tier or "Unknown"),
+                    inline = false,
+                },
+                {
+                    name = "Get Size :",
+                    value = ">>> " .. tostring(data.Size or "None"),
+                    inline = false,
+                },
+                {
+                    name = "Get Mutation :",
+                    value = ">>> " .. tostring(data.Variant or "None"),
+                    inline = false,
+                },
+                {
+                    name = "How Much Weight :",
+                    value = ">>> " .. tostring(data.Weight or "Unknown"),
+                    inline = false,
+                },
+                {
+                    name = "Rarity :",
+                    value = ">>> " .. tostring(data.Rarity or "Unknown"),
+                    inline = false,
+                }
+            },
+            image = {
+                url = imageUrl
+            }
+        }}
+    }
+
+    sendWebhook(getgenv().Webhook or _G.Webhook, payload)
+end
+
+--## CONNECTION NOTIFICATION
+local remote = api.Events.Notification
+if remote and remote:IsA("RemoteEvent") then
+    remote.OnClientEvent:Connect(function(message)
+        if typeof(message) ~= "string" then
+            return
+        end
+
+        if not string.find(message, "%[Server%]") then
+            return
+        end
+
+        local data = parseFishMessage(message)
+        if not data then
+            return
+        end
+
+        sendFishWebhook(data)
+    end)
+else
+    warn("Notification remote not found")
+end
