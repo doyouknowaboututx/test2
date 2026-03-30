@@ -17,9 +17,6 @@ if not httpRequest then
     return
 end
 
-getgenv().Webhook = "https://discord.com/api/webhooks/1459864376210100255/dTWumcDNJkUmbWFfZmGCq9caMh7CDraKqc8cg4g4Qzs089c3m6_x50UjFhgBkKm6yH72"
-getgenv().PlayerController = "https://discord.com/api/webhooks/1459865337850761302/3ctdG3rLT6nAcmtcVy-F67MyXIYKA-7TtN6tJTE97vvf8Zo4-VNbqyIsuUDegOeeM6Eq"
-
 --## PLAYER
 local player = svc.Players.LocalPlayer
 
