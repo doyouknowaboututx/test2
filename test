@@ -395,21 +395,27 @@ local function logPlayer(plr, action)
     local success, roleName = pcall(function() return plr:GetRoleInGroup(GroupId) end)
     if not success then roleName="No Role" end
 
+    local dt = os.date("*t")
+    local months = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"}
+    local formattedDate = string.format("%02d %s %04d %02d:%02d:%02d",
+        dt.day, months[dt.month], dt.year, dt.hour, dt.min, dt.sec)
+
     local payload = {
         username = "Chloe X Notifcation!",
         avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
         embeds = {{
+
             title = "CHLOE X PLAYER CONTROLLER",
             description = "Ding dong! Player ["..action.."] server here for full information!",
             color = (action=="Join" and 5763719 or 16753920),
             fields = {
                 {name="Name Player :", value=">>> "..plr.Name},
                 {name="Username Player :", value=">>> "..plr.DisplayName},
-                {name="Join Date :", value=">>> "..DateTime.now():ToIsoDate()},
+                {name="Join Date :", value=">>> "..formattedDate},
                 {name="Rank Player :", value=">>> "..(StaffRoles[roleName] and roleName or "No Role")},
                 {name="Amount Player in Server", value=">>> "..#svc.Players:GetPlayers().."/20"},
             },
-            timestamp = DateTime.now():ToIsoDate(),
+            timestamp = os.time(),
         }}
     }
 
