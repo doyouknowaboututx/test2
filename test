@@ -370,31 +370,6 @@ _G.AntiStaff = true
 local GroupId = 35102746
 
 local StaffRoles = {
-	["OG"] = true,
-	["Tester"] = true,
-	["Moderator"] = true,
-	["Community Staff"] = true,
-	["Community Mods"] = true,
-	["Analytics"] = true,
-	["Divers"] = true,
-	["Artist"] = true,
-	["Cat"] = true,
-	["Devs"] = true,
-	["Partner"] = true,
-	["Talon"] = true,
-	["Wildes"] = true,
-	["Swimmer"] = true,
-	["Contrib"] = true,
-	["Contrib 2"] = true,
-	["Scuba"] = true,
-	["CC"] = true,
-}
-
-_G.AntiStaff = true
-
-local GroupId = 35102746
-
-local StaffRoles = {
     ["OG"]=true, ["Tester"]=true, ["Moderator"]=true, ["Community Staff"]=true,
     ["Community Mods"]=true, ["Analytics"]=true, ["Divers"]=true, ["Artist"]=true,
     ["Cat"]=true, ["Devs"]=true, ["Partner"]=true, ["Talon"]=true,
@@ -436,18 +411,6 @@ local function logPlayer(plr, action)
         player:Kick(("Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName))
     end
 end
-
-for _, plr in ipairs(svc.Players:GetPlayers()) do
-    task.spawn(function() logPlayer(plr, "Join") end)
-end
-
-svc.Players.PlayerAdded:Connect(function(plr)
-    task.spawn(function() logPlayer(plr, "Join") end)
-end)
-
-svc.Players.PlayerRemoving:Connect(function(plr)
-    task.spawn(function() logPlayer(plr, "Leave") end)
-end)
 
 for _, plr in ipairs(svc.Players:GetPlayers()) do
     task.spawn(function() logPlayer(plr, "Join") end)
