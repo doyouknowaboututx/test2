@@ -2,6 +2,7 @@ local svc = {
     Players = game:GetService("Players"),
     HttpService = game:GetService("HttpService"),
     RS = game:GetService("ReplicatedStorage"),
+    StarterGui = game:GetService("StarterGui")
 }
 
 --## HTTP REQUEST SUPPORT
@@ -15,6 +16,9 @@ if not httpRequest then
     warn("HTTP Request not supported")
     return
 end
+
+getgenv().Webhook = "https://discord.com/api/webhooks/1459864376210100255/dTWumcDNJkUmbWFfZmGCq9caMh7CDraKqc8cg4g4Qzs089c3m6_x50UjFhgBkKm6yH72"
+getgenv().PlayerController = "https://discord.com/api/webhooks/1459865337850761302/3ctdG3rLT6nAcmtcVy-F67MyXIYKA-7TtN6tJTE97vvf8Zo4-VNbqyIsuUDegOeeM6Eq"
 
 --## PLAYER
 local player = svc.Players.LocalPlayer
@@ -378,36 +382,27 @@ local StaffRoles = {
 }
 
 local function logPlayer(plr, action)
-    if not plr or plr==player then return end
+    if not plr or plr == player then return end
     local success, roleName = pcall(function() return plr:GetRoleInGroup(GroupId) end)
-    if not success then roleName="No Role" end
-
-    local dt = os.date("*t")
-    local months = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"}
-    local formattedDate = string.format("%02d %s %04d %02d:%02d:%02d",
-        dt.day, months[dt.month], dt.year, dt.hour, dt.min, dt.sec)
-
+    if not success or not roleName then roleName = "No Role" end
     local payload = {
-        username = "Chloe X Notifcation!",
+        username = "Chloe X Notification!",
         avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
         embeds = {{
             title = "CHLOE X PLAYER CONTROLLER",
-            description = "Ding dong! Player ["..action.."] server here for full information!",
-            color = (action=="Join" and 5763719 or 16753920),
+            description = "Ding dong! Player " .. action .. " server here for full information!",
+            color = (action == "Join" and 5763719 or 16753920),
             fields = {
-                {name="Name Player :", value=">>> "..plr.Name},
-                {name="Username Player :", value=">>> "..plr.DisplayName},
-                {name="Join Date :", value=">>> "..formattedDate},
-                {name="Rank Player :", value=">>> "..(roleName~="" and roleName or "No Role")},
-                {name="Amount Player in Server", value=">>> "..#svc.Players:GetPlayers().."/20"},
+                {name="Name Player :", value=">>> " .. plr.Name},
+                {name="Username Player :", value=">>> " .. plr.DisplayName},
+                {name="Rank Player :", value=">>> " .. (roleName ~= "" and roleName or "No Role")},
+                {name="Amount Player in Server", value=">>> " .. #svc.Players:GetPlayers() .. "/20"},
             },
-            timestamp = os.time(),
+            timestamp = timestamp,
         }}
     }
-
     sendWebhook(getgenv().PlayerController or _G.PlayerController, payload)
-
-    if action=="Join" and StaffRoles[roleName] then
+    if action == "Join" and StaffRoles[roleName] then
         player:Kick(("Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName))
     end
 end
