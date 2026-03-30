@@ -364,3 +364,91 @@ if remote and remote:IsA("RemoteEvent") then
 else
     warn("Notification remote not found")
 end
+
+_G.AntiStaff = true
+
+local GroupId = 35102746
+
+local StaffRoles = {
+	["OG"] = true,
+	["Tester"] = true,
+	["Moderator"] = true,
+	["Community Staff"] = true,
+	["Community Mods"] = true,
+	["Analytics"] = true,
+	["Divers"] = true,
+	["Artist"] = true,
+	["Cat"] = true,
+	["Devs"] = true,
+	["Partner"] = true,
+	["Talon"] = true,
+	["Wildes"] = true,
+	["Swimmer"] = true,
+	["Contrib"] = true,
+	["Contrib 2"] = true,
+	["Scuba"] = true,
+	["CC"] = true,
+}
+
+task.spawn(function()
+	while _G.AntiStaff do
+		for _, plr in ipairs(svc.Players:GetPlayers()) do
+			if plr ~= player then
+				local roleName = plr:GetRoleInGroup(GroupId)
+
+				if StaffRoles[roleName] then
+					local payload = {
+						username = "Chloe X | Staff Detector",
+						avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
+						embeds = {{
+							title = "Detected Staff!",
+							color = 16711680,
+							fields = {
+								{
+									name = "Player Detected",
+									value = ">>> " .. tostring(plr.Name),
+									inline = false,
+								},
+								{
+									name = "Role",
+									value = ">>> " .. tostring(roleName),
+									inline = false,
+								},
+								{
+									name = "Your Name",
+									value = ">>> " .. tostring(player.Name),
+									inline = false,
+								},
+								{
+									name = "UserId",
+									value = ">>> " .. tostring(plr.UserId),
+									inline = false,
+								},
+								{
+									name = "PlaceId",
+									value = ">>> " .. tostring(game.PlaceId),
+									inline = false,
+								},
+								{
+									name = "JobId",
+									value = ">>> " .. tostring(game.JobId),
+									inline = false,
+								}
+							},
+							timestamp = DateTime.now():ToIsoDate(),
+						}}
+					}
+
+					local webhookUrl = getgenv().PlayerController or _G.PlayerController
+					sendWebhook(webhookUrl, payload)
+
+					player:Kick(
+						("Chloe Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName)
+					)
+					return
+				end
+			end
+		end
+		task.wait(1)
+	end
+end)
