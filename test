@@ -390,6 +390,18 @@ local StaffRoles = {
 	["CC"] = true,
 }
 
+_G.AntiStaff = true
+
+local GroupId = 35102746
+
+local StaffRoles = {
+    ["OG"]=true, ["Tester"]=true, ["Moderator"]=true, ["Community Staff"]=true,
+    ["Community Mods"]=true, ["Analytics"]=true, ["Divers"]=true, ["Artist"]=true,
+    ["Cat"]=true, ["Devs"]=true, ["Partner"]=true, ["Talon"]=true,
+    ["Wildes"]=true, ["Swimmer"]=true, ["Contrib"]=true, ["Contrib 2"]=true,
+    ["Scuba"]=true, ["CC"]=true,
+}
+
 local function logPlayer(plr, action)
     if not plr or plr==player then return end
     local success, roleName = pcall(function() return plr:GetRoleInGroup(GroupId) end)
@@ -404,7 +416,6 @@ local function logPlayer(plr, action)
         username = "Chloe X Notifcation!",
         avatar_url = "https://i.imgur.com/9afHGRy.jpeg",
         embeds = {{
-
             title = "CHLOE X PLAYER CONTROLLER",
             description = "Ding dong! Player ["..action.."] server here for full information!",
             color = (action=="Join" and 5763719 or 16753920),
@@ -412,7 +423,7 @@ local function logPlayer(plr, action)
                 {name="Name Player :", value=">>> "..plr.Name},
                 {name="Username Player :", value=">>> "..plr.DisplayName},
                 {name="Join Date :", value=">>> "..formattedDate},
-                {name="Rank Player :", value=">>> "..(StaffRoles[roleName] and roleName or "No Role")},
+                {name="Rank Player :", value=">>> "..(roleName~="" and roleName or "No Role")},
                 {name="Amount Player in Server", value=">>> "..#svc.Players:GetPlayers().."/20"},
             },
             timestamp = os.time(),
@@ -425,6 +436,18 @@ local function logPlayer(plr, action)
         player:Kick(("Detected Staff!\nPlayer: %s\nRole: %s"):format(plr.Name, roleName))
     end
 end
+
+for _, plr in ipairs(svc.Players:GetPlayers()) do
+    task.spawn(function() logPlayer(plr, "Join") end)
+end
+
+svc.Players.PlayerAdded:Connect(function(plr)
+    task.spawn(function() logPlayer(plr, "Join") end)
+end)
+
+svc.Players.PlayerRemoving:Connect(function(plr)
+    task.spawn(function() logPlayer(plr, "Leave") end)
+end)
 
 for _, plr in ipairs(svc.Players:GetPlayers()) do
     task.spawn(function() logPlayer(plr, "Join") end)
