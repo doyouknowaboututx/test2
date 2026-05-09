@@ -1439,14 +1439,10 @@ function Chloex:Window(GuiConfig)
 			local OpenSection = false
 
 			local function UpdateSizeScroll()
-				local OffsetY = 0
-				for _, child in ScrolLayers:GetChildren() do
-					if child:IsA("Frame") then
-						OffsetY += child.Size.Y.Offset + 3
-					end
-				end
-				ScrolLayers.CanvasSize = UDim2.new(0, 0, 0, OffsetY)
+				ScrolLayers.CanvasSize = UDim2.new(0, 0, 0, UIListLayout1.AbsoluteContentSize.Y)
 			end
+
+			UIListLayout1:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateSizeScroll)
 
 			local function UpdateSizeSection()
 				if not OpenSection then
