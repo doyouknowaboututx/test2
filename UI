@@ -811,16 +811,13 @@ function Chloex:Window(GuiConfig)
 	UIListLayout.Parent = ScrollTab
 
 	local function UpdateSize1()
-		local OffsetY = 0
-		for _, child in ScrollTab:GetChildren() do
-			if child.Name ~= "UIListLayout" then
-				OffsetY = OffsetY + 3 + child.Size.Y.Offset
-			end
-		end
-		ScrollTab.CanvasSize = UDim2.new(0, 0, 0, OffsetY)
+		ScrollTab.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
 	end
+
+	UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateSize1)
 	ScrollTab.ChildAdded:Connect(UpdateSize1)
 	ScrollTab.ChildRemoved:Connect(UpdateSize1)
+	UpdateSize1()
 
 	local UserFooter = Instance.new("Frame")
 	UserFooter.Name = "UserFooter"
