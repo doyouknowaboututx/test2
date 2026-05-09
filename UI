@@ -626,8 +626,8 @@ function Chloex:Window(GuiConfig)
 		Main = Instance.new("ImageLabel")
 		Main.Image = "rbxassetid://" .. GuiConfig.Theme
 		Main.ScaleType = Enum.ScaleType.Crop
-		Main.BackgroundTransparency = 0
-		Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Main.BackgroundTransparency = 0.2
+		Main.BackgroundColor3 = Color3.fromRGB(1, 67, 84)
 	end
 
 	Main.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -730,7 +730,7 @@ function Chloex:Window(GuiConfig)
 	LayersTab.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LayersTab.BorderSizePixel = 0
 	LayersTab.Position = UDim2.new(0, 9, 0, 50)
-	LayersTab.Size = UDim2.new(0, GuiConfig["Tab Width"], 1, -59)
+	LayersTab.Size = UDim2.new(0, GuiConfig["Tab Width"], 1, -93)
 	LayersTab.Name = "LayersTab"
 	LayersTab.Parent = Main
 
@@ -802,7 +802,7 @@ function Chloex:Window(GuiConfig)
 	ScrollTab.BackgroundTransparency = 0.9990000128746033
 	ScrollTab.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ScrollTab.BorderSizePixel = 0
-	ScrollTab.Size = UDim2.new(1, 0, 0.89, 0)
+	ScrollTab.Size = UDim2.new(1, 0, 0.89, 30)
 	ScrollTab.Name = "ScrollTab"
 	ScrollTab.Parent = LayersTab
 
@@ -1187,8 +1187,8 @@ function Chloex:Window(GuiConfig)
 	UIStroke14.Parent = DropdownSelect
 
 	DropdownSelectReal.AnchorPoint = Vector2.new(0.5, 0.5)
-	DropdownSelectReal.BackgroundColor3 = Color3.fromRGB(0, 31, 55)
-	DropdownSelectReal.BackgroundTransparency = 0
+	DropdownSelectReal.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
+	DropdownSelectReal.BackgroundTransparency = 0.1
 	DropdownSelectReal.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	DropdownSelectReal.BorderSizePixel = 0
 	DropdownSelectReal.LayoutOrder = 1
