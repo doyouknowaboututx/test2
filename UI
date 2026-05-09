@@ -532,6 +532,85 @@ function chloex(msg, delay, color, title, desc)
 	})
 end
 
+function Chloex:MakeOverlay(OverlayConfig)
+    OverlayConfig = OverlayConfig or {}
+    OverlayConfig.Content = OverlayConfig.Content or "Status"
+    OverlayConfig.Position = UDim2.new(0, 20, 0, 20)
+
+    local OverlayFunc = {}
+
+    local OverlayGui = Instance.new("ScreenGui")
+    OverlayGui.Name = "OverlayGui"
+    OverlayGui.ResetOnSpawn = false
+    OverlayGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    OverlayGui.Parent = CoreGui
+
+    local OverlayFrame = Instance.new("Frame")
+    OverlayFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    OverlayFrame.BackgroundTransparency = 0.4
+    OverlayFrame.BorderSizePixel = 0
+    OverlayFrame.Position = OverlayConfig.Position
+    OverlayFrame.Size = UDim2.new(0, 150, 0, 30)
+    OverlayFrame.Parent = OverlayGui
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 6)
+    UICorner.Parent = OverlayFrame
+
+    local ContentLabel = Instance.new("TextLabel")
+    ContentLabel.Font = Enum.Font.GothamBold
+    ContentLabel.Text = OverlayConfig.Content
+    ContentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ContentLabel.TextSize = 13
+    ContentLabel.BackgroundTransparency = 1
+    ContentLabel.Size = UDim2.new(1, -10, 1, 0)
+    ContentLabel.Position = UDim2.new(0, 10, 0, 0)
+    ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ContentLabel.Parent = OverlayFrame
+
+    local dragging, dragStart, startPos
+    OverlayFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = OverlayFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch
+        ) then
+            local delta = input.Position - dragStart
+            OverlayFrame.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    function OverlayFunc:SetContent(text)
+        ContentLabel.Text = text or ""
+    end
+
+    function OverlayFunc:SetVisible(bool)
+        OverlayFrame.Visible = bool
+    end
+
+    function OverlayFunc:Destroy()
+        OverlayGui:Destroy()
+    end
+
+    return OverlayFunc
+end
+
 function Chloex:Window(GuiConfig)
 	GuiConfig = GuiConfig or {}
 	GuiConfig.Title = GuiConfig.Title or "Chloe X"
