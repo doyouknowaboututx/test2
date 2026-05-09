@@ -635,6 +635,8 @@ function Chloex:Window(GuiConfig)
 	Main.BorderSizePixel = 0
 	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Main.Size = UDim2.new(1, -47, 1, -47)
+	Main.BackgroundColor3 = Color3.fromRGB(1, 67, 84)
+	Main.BackgroundTransparency = 0.2
 	Main.Name = "Main"
 	Main.Parent = DropShadow
 
