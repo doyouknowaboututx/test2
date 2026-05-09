@@ -551,6 +551,7 @@ function Chloex:MakeOverlay(OverlayConfig)
     OverlayFrame.BorderSizePixel = 0
     OverlayFrame.Position = OverlayConfig.Position
     OverlayFrame.Size = UDim2.new(0, 150, 0, 30)
+    OverlayFrame.AutomaticSize = Enum.AutomaticSize.Y
     OverlayFrame.Parent = OverlayGui
 
     local UICorner = Instance.new("UICorner")
@@ -563,8 +564,10 @@ function Chloex:MakeOverlay(OverlayConfig)
     ContentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     ContentLabel.TextSize = 13
     ContentLabel.BackgroundTransparency = 1
-    ContentLabel.Size = UDim2.new(1, -10, 1, 0)
-    ContentLabel.Position = UDim2.new(0, 10, 0, 0)
+    ContentLabel.TextWrapped = true
+    ContentLabel.AutomaticSize = Enum.AutomaticSize.Y
+    ContentLabel.Size = UDim2.new(1, -10, 0, 0)
+    ContentLabel.Position = UDim2.new(0, 10, 0, 5)
     ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
     ContentLabel.Parent = OverlayFrame
 
