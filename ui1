@@ -2014,19 +2014,56 @@ function Chloex:Window(guiconfig)
 
 			function items:AddSlider(sliderconfig)
 				sliderconfig = sliderconfig or {}
-				sliderconfig.Title = sliderconfig.Title or "Slider"
-				sliderconfig.Increment = sliderconfig.Increment or 1
-				sliderconfig.Min = sliderconfig.Min or 0
-				sliderconfig.Max = sliderconfig.Max or 100
-				sliderconfig.Default = sliderconfig.Default or 50
+				sliderconfig.Title = sliderconfig.Title or sliderconfig.Name or "Slider"
+				sliderconfig.Increment = tonumber(sliderconfig.Increment) or 1
+				sliderconfig.Min = tonumber(sliderconfig.Min) or 0
+				sliderconfig.Max = tonumber(sliderconfig.Max) or 100
+				sliderconfig.Default = tonumber(sliderconfig.Default) or sliderconfig.Min
 				sliderconfig.Callback = sliderconfig.Callback or function() end
 
 				local configkey = "Slider_" .. sliderconfig.Title
 				if config.data[configkey] ~= nil then
-					sliderconfig.Default = config.data[configkey]
+					sliderconfig.Default = tonumber(config.data[configkey]) or sliderconfig.Default
 				end
 
-				local sliderfunc = { Value = sliderconfig.Default }
+				local function getprecision(step)
+					local s = tostring(step)
+					if s:find("e") or s:find("E") then
+						local formatted = string.format("%.10f", step)
+						formatted = formatted:gsub("0+$", "")
+						local dot = formatted:find("%.")
+						return dot and (#formatted - dot) or 0
+					end
+
+					local dot = s:find("%.")
+					return dot and (#s - dot) or 0
+				end
+
+				local precision = sliderconfig.Precision or getprecision(sliderconfig.Increment)
+
+				local function roundtoincrement(value)
+					local step = sliderconfig.Increment
+					return math.floor((value / step) + 0.5) * step
+				end
+
+				local function formatnumber(value)
+					value = tonumber(string.format("%." .. precision .. "f", value))
+					if precision > 0 then
+						return string.format("%." .. precision .. "f", value):gsub("0+$", ""):gsub("%.$", "")
+					end
+					return tostring(math.floor(value + 0.5))
+				end
+
+				local function clampvalue(value)
+					value = tonumber(value) or sliderconfig.Min
+					value = math.clamp(value, sliderconfig.Min, sliderconfig.Max)
+					value = roundtoincrement(value)
+					value = math.clamp(value, sliderconfig.Min, sliderconfig.Max)
+					value = tonumber(string.format("%." .. precision .. "f", value))
+					return value
+				end
+
+				local sliderfunc = { Value = clampvalue(sliderconfig.Default) }
 
 				local slider = instance.frame(sectionadd)
 				slider.Name = "Slider"
@@ -2034,7 +2071,7 @@ function Chloex:Window(guiconfig)
 				slider.BackgroundTransparency = 0.935
 				slider.BorderSizePixel = 0
 				slider.LayoutOrder = countitem
-				slider.Size = UDim2.new(1, 0, 0, 46)
+				slider.Size = UDim2.new(1, 0, 0, 54)
 
 				instance.uicorner(slider).CornerRadius = UDim.new(0, 4)
 
@@ -2044,79 +2081,110 @@ function Chloex:Window(guiconfig)
 				slidertitle.TextColor3 = Color3.fromRGB(230, 230, 230)
 				slidertitle.TextSize = 13
 				slidertitle.TextXAlignment = Enum.TextXAlignment.Left
-				slidertitle.TextYAlignment = Enum.TextYAlignment.Top
+				slidertitle.TextYAlignment = Enum.TextYAlignment.Center
 				slidertitle.BackgroundTransparency = 1
-				slidertitle.Position = UDim2.new(0, 10, 0, 15)
-				slidertitle.Size = UDim2.new(1, -180, 0, 13)
+				slidertitle.Position = UDim2.new(0, 10, 0, 7)
+				slidertitle.Size = UDim2.new(1, -85, 0, 18)
 
-				local sliderinput = instance.frame(slider)
-				sliderinput.AnchorPoint = Vector2.new(0, 0.5)
-				sliderinput.BackgroundTransparency = 1
-				sliderinput.Position = UDim2.new(1, -155, 0.5, 0)
-				sliderinput.Size = UDim2.new(0, 40, 0, 20)
+				local inputholder = instance.frame(slider)
+				inputholder.AnchorPoint = Vector2.new(1, 0)
+				inputholder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				inputholder.BackgroundTransparency = 0.92
+				inputholder.Position = UDim2.new(1, -10, 0, 6)
+				inputholder.Size = UDim2.new(0, 58, 0, 22)
 
-				instance.uicorner(sliderinput).CornerRadius = UDim.new(0, 2)
+				instance.uicorner(inputholder).CornerRadius = UDim.new(0, 4)
 
-				local textbox = instance.textbox(sliderinput)
+				local textbox = instance.textbox(inputholder)
 				textbox.Font = Enum.Font.GothamBold
 				textbox.Text = ""
 				textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-				textbox.TextSize = 13
+				textbox.TextSize = 12
+				textbox.TextXAlignment = Enum.TextXAlignment.Center
 				textbox.BackgroundTransparency = 1
-				textbox.Size = UDim2.new(1, 0, 1, 0)
+				textbox.ClearTextOnFocus = false
+				textbox.Size = UDim2.new(1, -6, 1, 0)
+				textbox.Position = UDim2.new(0, 3, 0, 0)
 
 				local sliderframe = instance.frame(slider)
-				sliderframe.AnchorPoint = Vector2.new(1, 0.5)
+				sliderframe.Name = "SliderBar"
 				sliderframe.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				sliderframe.BackgroundTransparency = 0.8
-				sliderframe.Position = UDim2.new(1, -20, 0.5, 0)
-				sliderframe.Size = UDim2.new(0, 100, 0, 3)
+				sliderframe.BackgroundTransparency = 0.82
+				sliderframe.Position = UDim2.new(0, 10, 0, 36)
+				sliderframe.Size = UDim2.new(1, -20, 0, 5)
+				sliderframe.Active = true
 
-				instance.uicorner(sliderframe)
+				instance.uicorner(sliderframe).CornerRadius = UDim.new(1, 0)
 
-				local sliderdraggable = instance.frame(sliderframe)
-				sliderdraggable.AnchorPoint = Vector2.new(0, 0.5)
-				sliderdraggable.BackgroundColor3 = guiconfig.Color
-				sliderdraggable.Position = UDim2.new(0, 0, 0.5, 0)
-				sliderdraggable.Size = UDim2.new(0, 0, 0, 1)
+				local sliderfill = instance.frame(sliderframe)
+				sliderfill.Name = "SliderFill"
+				sliderfill.BackgroundColor3 = guiconfig.Color
+				sliderfill.BorderSizePixel = 0
+				sliderfill.Size = UDim2.new(0, 0, 1, 0)
 
-				instance.uicorner(sliderdraggable)
+				instance.uicorner(sliderfill).CornerRadius = UDim.new(1, 0)
 
-				local slidercircle = instance.frame(sliderdraggable)
-				slidercircle.AnchorPoint = Vector2.new(1, 0.5)
+				local slidercircle = instance.frame(sliderframe)
+				slidercircle.Name = "SliderCircle"
+				slidercircle.AnchorPoint = Vector2.new(0.5, 0.5)
 				slidercircle.BackgroundColor3 = guiconfig.Color
-				slidercircle.Position = UDim2.new(1, 4, 0.5, 0)
-				slidercircle.Size = UDim2.new(0, 8, 0, 8)
+				slidercircle.Position = UDim2.new(0, 0, 0.5, 0)
+				slidercircle.Size = UDim2.new(0, 12, 0, 12)
+				slidercircle.Active = true
 
-				instance.uicorner(slidercircle)
+				instance.uicorner(slidercircle).CornerRadius = UDim.new(1, 0)
 
-				local uistroke6 = instance.uistroke(slidercircle)
-				uistroke6.Color = guiconfig.Color
+				local uistroke = instance.uistroke(slidercircle)
+				uistroke.Color = Color3.fromRGB(255, 255, 255)
+				uistroke.Transparency = 0.45
+				uistroke.Thickness = 1
 
 				local dragging = false
+				local setting = false
 
-				local function round(number, factor)
-					return math.floor((number / factor) + 0.5) * factor
+				local function getpercent(value)
+					if sliderconfig.Max == sliderconfig.Min then
+						return 0
+					end
+					return math.clamp((value - sliderconfig.Min) / (sliderconfig.Max - sliderconfig.Min), 0, 1)
 				end
 
-				function sliderfunc:Set(value)
-					value = math.clamp(round(value, sliderconfig.Increment), sliderconfig.Min, sliderconfig.Max)
-					value = tonumber(string.format("%.2f", value))
+				local function setfromx(x)
+					local percent = math.clamp((x - sliderframe.AbsolutePosition.X) / sliderframe.AbsoluteSize.X, 0, 1)
+					local value = sliderconfig.Min + ((sliderconfig.Max - sliderconfig.Min) * percent)
+					sliderfunc:Set(value)
+				end
+
+				function sliderfunc:Set(value, nocallback)
+					value = clampvalue(value)
 
 					sliderfunc.Value = value
-					textbox.Text = tostring(value)
+					config.data[configkey] = value
+
+					local percent = getpercent(value)
+					setting = true
+					textbox.Text = formatnumber(value)
+					setting = false
 
 					sv.ts
-						:Create(sliderdraggable, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-							Size = UDim2.fromScale(
-								(value - sliderconfig.Min) / (sliderconfig.Max - sliderconfig.Min),
-								1
-							),
-						})
+						:Create(
+							sliderfill,
+							TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+							{ Size = UDim2.new(percent, 0, 1, 0) }
+						)
 						:Play()
 
-					sliderconfig.Callback(value)
-					config.data[configkey] = value
+					sv.ts
+						:Create(
+							slidercircle,
+							TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+							{ Position = UDim2.new(percent, 0, 0.5, 0) }
+						)
+						:Play()
+
+					if not nocallback then
+						task.spawn(sliderconfig.Callback, value)
+					end
 				end
 
 				sliderframe.InputBegan:Connect(function(input)
@@ -2125,18 +2193,21 @@ function Chloex:Window(guiconfig)
 						or input.UserInputType == Enum.UserInputType.Touch
 					then
 						dragging = true
-
-						local sizescale = math.clamp(
-							(input.Position.X - sliderframe.AbsolutePosition.X) / sliderframe.AbsoluteSize.X,
-							0,
-							1
-						)
-
-						sliderfunc:Set(sliderconfig.Min + ((sliderconfig.Max - sliderconfig.Min) * sizescale))
+						setfromx(input.Position.X)
 					end
 				end)
 
-				sliderframe.InputEnded:Connect(function(input)
+				slidercircle.InputBegan:Connect(function(input)
+					if
+						input.UserInputType == Enum.UserInputType.MouseButton1
+						or input.UserInputType == Enum.UserInputType.Touch
+					then
+						dragging = true
+						setfromx(input.Position.X)
+					end
+				end)
+
+				sv.uis.InputEnded:Connect(function(input)
 					if
 						input.UserInputType == Enum.UserInputType.MouseButton1
 						or input.UserInputType == Enum.UserInputType.Touch
@@ -2153,30 +2224,30 @@ function Chloex:Window(guiconfig)
 							or input.UserInputType == Enum.UserInputType.Touch
 						)
 					then
-						local sizescale = math.clamp(
-							(input.Position.X - sliderframe.AbsolutePosition.X) / sliderframe.AbsoluteSize.X,
-							0,
-							1
-						)
-
-						sliderfunc:Set(sliderconfig.Min + ((sliderconfig.Max - sliderconfig.Min) * sizescale))
+						setfromx(input.Position.X)
 					end
 				end)
 
-				textbox:GetPropertyChangedSignal("Text"):Connect(function()
-					local valid = textbox.Text:gsub("[^%d%.]", "")
-					if valid ~= "" then
-						local validnumber = tonumber(valid)
-						if validnumber then
-							validnumber = math.clamp(validnumber, sliderconfig.Min, sliderconfig.Max)
-							sliderfunc:Set(validnumber)
-						end
+				textbox.FocusLost:Connect(function()
+					if setting then
+						return
+					end
+
+					local text = textbox.Text:gsub(",", ".")
+					local value = tonumber(text)
+
+					if value then
+						sliderfunc:Set(value)
+					else
+						textbox.Text = formatnumber(sliderfunc.Value)
 					end
 				end)
 
-				sliderfunc:Set(sliderconfig.Default)
+				sliderfunc:Set(sliderfunc.Value, true)
+
 				countitem = countitem + 1
 				config.elements[configkey] = sliderfunc
+
 				return sliderfunc
 			end
 
