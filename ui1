@@ -1348,14 +1348,31 @@ function Chloex:Window(guiconfig)
 	local searchlayer = instance.frame(layers)
 	searchlayer.Name = "SearchLayer"
 	searchlayer.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
-	searchlayer.BackgroundTransparency = 0.05
+	searchlayer.BackgroundTransparency = 0.35
 	searchlayer.BorderSizePixel = 0
-	searchlayer.BackgroundTransparency = main.BackgroundTransparency
 	searchlayer.Size = UDim2.new(1, 0, 1, 0)
 	searchlayer.Visible = false
 	searchlayer.ZIndex = 60
 
 	instance.uicorner(searchlayer).CornerRadius = UDim.new(0, 6)
+
+	local acrylicstroke = instance.uistroke(searchlayer)
+	acrylicstroke.Color = Color3.fromRGB(255, 255, 255)
+	acrylicstroke.Transparency = 0.88
+	acrylicstroke.Thickness = 1
+
+	local acrylicgradient = instance.uigradient(searchlayer)
+	acrylicgradient.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(1, 60, 75)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 20, 28)),
+	})
+	acrylicgradient.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.82),
+		NumberSequenceKeypoint.new(0.5, 0.95),
+		NumberSequenceKeypoint.new(1, 0.86),
+	})
+	acrylicgradient.Rotation = 35
 
 	local searchbox = instance.textbox(searchlayer)
 	searchbox.Name = "SearchBox"
@@ -1366,7 +1383,7 @@ function Chloex:Window(guiconfig)
 	searchbox.TextColor3 = Color3.fromRGB(255, 255, 255)
 	searchbox.PlaceholderColor3 = Color3.fromRGB(160, 160, 160)
 	searchbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	searchbox.BackgroundTransparency = 0.92
+	searchbox.BackgroundTransparency = 0.88
 	searchbox.BorderSizePixel = 0
 	searchbox.AnchorPoint = Vector2.new(1, 0)
 	searchbox.Position = UDim2.new(1, -10, 0, 10)
@@ -1412,12 +1429,17 @@ function Chloex:Window(guiconfig)
 				item.Name = "SearchResult - " .. data.Name
 				item.Text = ""
 				item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				item.BackgroundTransparency = 0.935
+				item.BackgroundTransparency = 0.9
 				item.BorderSizePixel = 0
 				item.Size = UDim2.new(1, -6, 0, 46)
 				item.ZIndex = 62
 
 				instance.uicorner(item).CornerRadius = UDim.new(0, 5)
+
+				local itemstroke = instance.uistroke(item)
+				itemstroke.Color = Color3.fromRGB(255, 255, 255)
+				itemstroke.Transparency = 0.92
+				itemstroke.Thickness = 1
 
 				local title = instance.textlabel(item)
 				title.Name = "Title"
@@ -1436,7 +1458,7 @@ function Chloex:Window(guiconfig)
 				path.Text = data.Path
 				path.Font = Enum.Font.Gotham
 				path.TextSize = 11
-				path.TextColor3 = Color3.fromRGB(150, 150, 150)
+				path.TextColor3 = Color3.fromRGB(160, 160, 160)
 				path.TextXAlignment = Enum.TextXAlignment.Left
 				path.BackgroundTransparency = 1
 				path.Position = UDim2.new(0, 10, 0, 25)
