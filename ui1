@@ -2029,17 +2029,14 @@ function Chloex:Window(guiconfig)
 				local function getprecision(step)
 					local s = tostring(step)
 					if s:find("e") or s:find("E") then
-						local formatted = string.format("%.10f", step)
-						formatted = formatted:gsub("0+$", "")
-						local dot = formatted:find("%.")
-						return dot and (#formatted - dot) or 0
+						s = string.format("%.12f", step):gsub("0+$", ""):gsub("%.$", "")
 					end
 
 					local dot = s:find("%.")
 					return dot and (#s - dot) or 0
 				end
 
-				local precision = sliderconfig.Precision or getprecision(sliderconfig.Increment)
+				local precision = tonumber(sliderconfig.Precision) or getprecision(sliderconfig.Increment)
 
 				local function roundtoincrement(value)
 					local step = sliderconfig.Increment
@@ -2047,10 +2044,12 @@ function Chloex:Window(guiconfig)
 				end
 
 				local function formatnumber(value)
-					value = tonumber(string.format("%." .. precision .. "f", value))
+					value = tonumber(string.format("%." .. precision .. "f", value)) or 0
+
 					if precision > 0 then
 						return string.format("%." .. precision .. "f", value):gsub("0+$", ""):gsub("%.$", "")
 					end
+
 					return tostring(math.floor(value + 0.5))
 				end
 
@@ -2059,11 +2058,13 @@ function Chloex:Window(guiconfig)
 					value = math.clamp(value, sliderconfig.Min, sliderconfig.Max)
 					value = roundtoincrement(value)
 					value = math.clamp(value, sliderconfig.Min, sliderconfig.Max)
-					value = tonumber(string.format("%." .. precision .. "f", value))
+					value = tonumber(string.format("%." .. precision .. "f", value)) or sliderconfig.Min
 					return value
 				end
 
-				local sliderfunc = { Value = clampvalue(sliderconfig.Default) }
+				local sliderfunc = {
+					Value = clampvalue(sliderconfig.Default),
+				}
 
 				local slider = instance.frame(sectionadd)
 				slider.Name = "Slider"
@@ -2071,11 +2072,12 @@ function Chloex:Window(guiconfig)
 				slider.BackgroundTransparency = 0.935
 				slider.BorderSizePixel = 0
 				slider.LayoutOrder = countitem
-				slider.Size = UDim2.new(1, 0, 0, 54)
+				slider.Size = UDim2.new(1, 0, 0, 58)
 
 				instance.uicorner(slider).CornerRadius = UDim.new(0, 4)
 
 				local slidertitle = instance.textlabel(slider)
+				slidertitle.Name = "SliderTitle"
 				slidertitle.Font = Enum.Font.GothamBold
 				slidertitle.Text = sliderconfig.Title
 				slidertitle.TextColor3 = Color3.fromRGB(230, 230, 230)
@@ -2084,18 +2086,20 @@ function Chloex:Window(guiconfig)
 				slidertitle.TextYAlignment = Enum.TextYAlignment.Center
 				slidertitle.BackgroundTransparency = 1
 				slidertitle.Position = UDim2.new(0, 10, 0, 7)
-				slidertitle.Size = UDim2.new(1, -85, 0, 18)
+				slidertitle.Size = UDim2.new(1, -90, 0, 20)
 
 				local inputholder = instance.frame(slider)
+				inputholder.Name = "SliderInputHolder"
 				inputholder.AnchorPoint = Vector2.new(1, 0)
 				inputholder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				inputholder.BackgroundTransparency = 0.92
 				inputholder.Position = UDim2.new(1, -10, 0, 6)
-				inputholder.Size = UDim2.new(0, 58, 0, 22)
+				inputholder.Size = UDim2.new(0, 64, 0, 23)
 
 				instance.uicorner(inputholder).CornerRadius = UDim.new(0, 4)
 
 				local textbox = instance.textbox(inputholder)
+				textbox.Name = "SliderInput"
 				textbox.Font = Enum.Font.GothamBold
 				textbox.Text = ""
 				textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2110,7 +2114,7 @@ function Chloex:Window(guiconfig)
 				sliderframe.Name = "SliderBar"
 				sliderframe.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				sliderframe.BackgroundTransparency = 0.82
-				sliderframe.Position = UDim2.new(0, 10, 0, 36)
+				sliderframe.Position = UDim2.new(0, 10, 0, 39)
 				sliderframe.Size = UDim2.new(1, -20, 0, 5)
 				sliderframe.Active = true
 
@@ -2131,13 +2135,37 @@ function Chloex:Window(guiconfig)
 				slidercircle.Position = UDim2.new(0, 0, 0.5, 0)
 				slidercircle.Size = UDim2.new(0, 12, 0, 12)
 				slidercircle.Active = true
+				slidercircle.ZIndex = 4
 
 				instance.uicorner(slidercircle).CornerRadius = UDim.new(1, 0)
 
-				local uistroke = instance.uistroke(slidercircle)
-				uistroke.Color = Color3.fromRGB(255, 255, 255)
-				uistroke.Transparency = 0.45
-				uistroke.Thickness = 1
+				local circlestroke = instance.uistroke(slidercircle)
+				circlestroke.Color = Color3.fromRGB(255, 255, 255)
+				circlestroke.Transparency = 0.45
+				circlestroke.Thickness = 1
+
+				local bubble = instance.frame(sliderframe)
+				bubble.Name = "ValueBubble"
+				bubble.AnchorPoint = Vector2.new(0.5, 1)
+				bubble.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+				bubble.BackgroundTransparency = 0.08
+				bubble.Position = UDim2.new(0, 0, 0, -10)
+				bubble.Size = UDim2.new(0, 56, 0, 22)
+				bubble.Visible = false
+				bubble.ZIndex = 20
+
+				instance.uicorner(bubble).CornerRadius = UDim.new(0, 6)
+
+				local bubbletext = instance.textlabel(bubble)
+				bubbletext.Name = "BubbleText"
+				bubbletext.BackgroundTransparency = 1
+				bubbletext.Size = UDim2.new(1, 0, 1, 0)
+				bubbletext.Font = Enum.Font.GothamBold
+				bubbletext.TextColor3 = Color3.fromRGB(255, 255, 255)
+				bubbletext.TextSize = 11
+				bubbletext.TextXAlignment = Enum.TextXAlignment.Center
+				bubbletext.TextYAlignment = Enum.TextYAlignment.Center
+				bubbletext.ZIndex = 21
 
 				local dragging = false
 				local setting = false
@@ -2146,12 +2174,56 @@ function Chloex:Window(guiconfig)
 					if sliderconfig.Max == sliderconfig.Min then
 						return 0
 					end
+
 					return math.clamp((value - sliderconfig.Min) / (sliderconfig.Max - sliderconfig.Min), 0, 1)
+				end
+
+				local function updatebubble(percent, value)
+					bubble.Position = UDim2.new(percent, 0, 0, -10)
+					bubbletext.Text = tostring(value)
+				end
+
+				local function showbubble()
+					bubble.Visible = true
+
+					sv.ts
+						:Create(slidercircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Size = UDim2.new(0, 14, 0, 14),
+						})
+						:Play()
+
+					sv.ts
+						:Create(bubble, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							BackgroundTransparency = 0.08,
+							Size = UDim2.new(0, 60, 0, 24),
+						})
+						:Play()
+				end
+
+				local function hidebubble()
+					sv.ts
+						:Create(slidercircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Size = UDim2.new(0, 12, 0, 12),
+						})
+						:Play()
+
+					sv.ts
+						:Create(bubble, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Size = UDim2.new(0, 56, 0, 22),
+						})
+						:Play()
+
+					task.delay(0.15, function()
+						if not dragging then
+							bubble.Visible = false
+						end
+					end)
 				end
 
 				local function setfromx(x)
 					local percent = math.clamp((x - sliderframe.AbsolutePosition.X) / sliderframe.AbsoluteSize.X, 0, 1)
 					local value = sliderconfig.Min + ((sliderconfig.Max - sliderconfig.Min) * percent)
+
 					sliderfunc:Set(value)
 				end
 
@@ -2162,24 +2234,24 @@ function Chloex:Window(guiconfig)
 					config.data[configkey] = value
 
 					local percent = getpercent(value)
+					local formatted = formatnumber(value)
+
 					setting = true
-					textbox.Text = formatnumber(value)
+					textbox.Text = formatted
 					setting = false
 
+					updatebubble(percent, formatted)
+
 					sv.ts
-						:Create(
-							sliderfill,
-							TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-							{ Size = UDim2.new(percent, 0, 1, 0) }
-						)
+						:Create(sliderfill, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Size = UDim2.new(percent, 0, 1, 0),
+						})
 						:Play()
 
 					sv.ts
-						:Create(
-							slidercircle,
-							TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-							{ Position = UDim2.new(percent, 0, 0.5, 0) }
-						)
+						:Create(slidercircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Position = UDim2.new(percent, 0, 0.5, 0),
+						})
 						:Play()
 
 					if not nocallback then
@@ -2193,6 +2265,7 @@ function Chloex:Window(guiconfig)
 						or input.UserInputType == Enum.UserInputType.Touch
 					then
 						dragging = true
+						showbubble()
 						setfromx(input.Position.X)
 					end
 				end)
@@ -2203,6 +2276,7 @@ function Chloex:Window(guiconfig)
 						or input.UserInputType == Enum.UserInputType.Touch
 					then
 						dragging = true
+						showbubble()
 						setfromx(input.Position.X)
 					end
 				end)
@@ -2213,6 +2287,7 @@ function Chloex:Window(guiconfig)
 						or input.UserInputType == Enum.UserInputType.Touch
 					then
 						dragging = false
+						hidebubble()
 					end
 				end)
 
@@ -2228,6 +2303,10 @@ function Chloex:Window(guiconfig)
 					end
 				end)
 
+				textbox.Focused:Connect(function()
+					showbubble()
+				end)
+
 				textbox.FocusLost:Connect(function()
 					if setting then
 						return
@@ -2241,6 +2320,8 @@ function Chloex:Window(guiconfig)
 					else
 						textbox.Text = formatnumber(sliderfunc.Value)
 					end
+
+					hidebubble()
 				end)
 
 				sliderfunc:Set(sliderfunc.Value, true)
