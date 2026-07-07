@@ -2975,34 +2975,61 @@ function Chloex:Window(guiconfig)
 
 			function items:AddConfigPanel()
 				local selectedconfigname = config.current or ""
+				local selectedautoloadname = config:getautoload() or ""
+				local selectedfoldername = config.gamefolder and config.gamefolder:match("Chloe X/(.+)") or ""
+
+				local function getfolders()
+					local folders = {}
+
+					if isfolder and listfiles and isfolder("Chloe X") then
+						for _, path in ipairs(listfiles("Chloe X")) do
+							local name = path:match("Chloe X[/\\](.+)$")
+							if name and isfolder(path) then
+								table.insert(folders, name)
+							end
+						end
+					end
+
+					if #folders == 0 and selectedfoldername ~= "" then
+						table.insert(folders, selectedfoldername)
+					end
+
+					return folders
+				end
+
+				local function setdropdownlist(dropdown, list)
+					if dropdown.Refresh then
+						dropdown:Refresh(list)
+					elseif dropdown.SetValues then
+						dropdown:SetValues(list, dropdown.Value)
+					end
+				end
 
 				local statusparagraph = items:AddParagraph({
 					Title = "Config Manager",
-					Content = "Current: "
+					Content = "Save: "
 						.. (config.current or "None")
-						.. " | Autoload: "
+						.. " | Auto Load: "
 						.. (config:getautoload() or "None"),
-					Icon = "settings",
 				})
 
-				local confignameinput = items:AddInput({
+				local function updatestatus()
+					statusparagraph:SetContent(
+						"Save: " .. (config.current or "None") .. " | Auto Load: " .. (config:getautoload() or "None")
+					)
+				end
+
+				items:AddInput({
 					Title = "Config Name",
-					Content = "Enter the name for your config",
-					Placeholder = "e.g., Default, PVP, Farming",
-					Default = config.current or "",
-					Callback = function(value)
-						selectedconfigname = value
-					end,
+					Placeholder = "Write config name here",
 				})
 
 				local configdropdown = items:AddDropdown({
 					Title = "Select Config",
-					Content = "Choose from existing configs",
+					Multi = false,
 					Options = config:getlist(),
-					Default = nil,
-					Callback = function(selected)
-						selectedconfigname = selected
-						confignameinput:Set(selected)
+					Callback = function(value)
+						selectedconfigname = value or ""
 					end,
 				})
 
@@ -3010,110 +3037,143 @@ function Chloex:Window(guiconfig)
 					Title = "Save Config",
 					SubTitle = "Load Config",
 					Callback = function()
-						if selectedconfigname ~= "" then
-							if config:save(selectedconfigname) then
-								chloex("Config saved: " .. selectedconfigname, 3, Color3.fromRGB(100, 255, 100))
-								configdropdown:SetValues(config:getlist())
-								statusparagraph:SetContent(
-									"Current: "
-										.. selectedconfigname
-										.. " | Autoload: "
-										.. (config:getautoload() or "None")
-								)
-							end
-						else
-							chloex("Please enter a config name", 3, Color3.fromRGB(255, 100, 100))
+						local input = config.elements["Input_Config Name"]
+						local name = input and input.Value or ""
+
+						if name == "" then
+							chloex("Config name cannot be empty", 3, Color3.fromRGB(255, 100, 100))
+							return
+						end
+
+						if config:save(name) then
+							selectedconfigname = name
+							setdropdownlist(configdropdown, config:getlist())
+							updatestatus()
+							chloex("Config saved: " .. name, 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 					SubCallback = function()
-						if selectedconfigname ~= "" then
-							if config:load(selectedconfigname) then
-								chloex("Config loaded: " .. selectedconfigname, 3, Color3.fromRGB(100, 255, 100))
-								statusparagraph:SetContent(
-									"Current: "
-										.. selectedconfigname
-										.. " | Autoload: "
-										.. (config:getautoload() or "None")
-								)
-							else
-								chloex("Failed to load: " .. selectedconfigname, 3, Color3.fromRGB(255, 100, 100))
-							end
-						else
-							chloex("Please select a config", 3, Color3.fromRGB(255, 100, 100))
+						if selectedconfigname == "" then
+							chloex("Select config first", 3, Color3.fromRGB(255, 100, 100))
+							return
+						end
+
+						if config:load(selectedconfigname) then
+							updatestatus()
+							chloex("Config loaded: " .. selectedconfigname, 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 				})
 
 				items:AddButton({
 					Title = "Delete Config",
-					SubTitle = "Set Autoload",
+					SubTitle = "Override Config",
 					Callback = function()
-						if selectedconfigname ~= "" then
-							task.wait(0.5)
-							if config:delete(selectedconfigname) then
-								chloex("Config deleted: " .. selectedconfigname, 3, Color3.fromRGB(255, 100, 100))
-								selectedconfigname = ""
-								confignameinput:Set("")
-								configdropdown:Set(config:getlist())
-								statusparagraph:SetContent(
-									"Current: "
-										.. (config.current or "None")
-										.. " | Autoload: "
-										.. (config:getautoload() or "None")
-								)
-							end
-						else
-							chloex("Please select a config to delete", 3, Color3.fromRGB(255, 100, 100))
+						if selectedconfigname == "" then
+							chloex("Select config first", 3, Color3.fromRGB(255, 100, 100))
+							return
+						end
+
+						if config:delete(selectedconfigname) then
+							selectedconfigname = ""
+							setdropdownlist(configdropdown, config:getlist())
+							updatestatus()
+							chloex("Config deleted", 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 					SubCallback = function()
-						if selectedconfigname ~= "" then
-							config:setautoload(selectedconfigname)
-							chloex("Autoload set to: " .. selectedconfigname, 3, Color3.fromRGB(100, 200, 255))
-							statusparagraph:SetContent(
-								"Current: " .. (config.current or "None") .. " | Autoload: " .. selectedconfigname
-							)
-						else
-							chloex("Please enter a config name", 3, Color3.fromRGB(255, 100, 100))
+						local input = config.elements["Input_Config Name"]
+						local name = input and input.Value or ""
+
+						if name == "" then
+							name = selectedconfigname
+						end
+
+						if not name or name == "" then
+							chloex("Input or select config first", 3, Color3.fromRGB(255, 100, 100))
+							return
+						end
+
+						if config:save(name) then
+							selectedconfigname = name
+							setdropdownlist(configdropdown, config:getlist())
+							updatestatus()
+							chloex("Config overridden: " .. name, 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 				})
 
-				items:AddButton({
-					Title = "Refresh List",
-					SubTitle = "Clear Autoload",
-					Callback = function()
-						local newconfigs = config:getlist()
-						configdropdown:Set(newconfigs)
-						chloex(
-							"Config list refreshed (" .. #newconfigs .. " configs)",
-							2,
-							Color3.fromRGB(150, 150, 255)
-						)
-					end,
-					SubCallback = function()
-						config:clearautoload()
-						chloex("Autoload cleared", 3, Color3.fromRGB(200, 200, 100))
-						statusparagraph:SetContent("Current: " .. (config.current or "None") .. " | Autoload: None")
+				items:AddSubSection("Auto-Load Configuration")
+
+				local autostatus = items:AddParagraph({
+					Title = "Auto Load Status",
+					Content = "Auto Load: " .. (config:getautoload() or "None"),
+				})
+
+				local autoloaddropdown = items:AddDropdown({
+					Title = "Select Auto-Load Config",
+					Multi = false,
+					Options = config:getlist(),
+					Callback = function(value)
+						selectedautoloadname = value or ""
 					end,
 				})
 
 				items:AddButton({
-					Title = "Reset All Elements to Default",
+					Title = "Set Auto Load",
+					SubTitle = "Clear Auto Load",
 					Callback = function()
-						config:reset()
-						chloex("All elements reset to default values", 3, Color3.fromRGB(255, 200, 100))
+						if selectedautoloadname == "" then
+							chloex("Select auto-load config first", 3, Color3.fromRGB(255, 100, 100))
+							return
+						end
+
+						if config:setautoload(selectedautoloadname) then
+							autostatus:SetContent("Auto Load: " .. selectedautoloadname)
+							updatestatus()
+							chloex("Auto load set: " .. selectedautoloadname, 3, Color3.fromRGB(100, 255, 100))
+						end
+					end,
+					SubCallback = function()
+						if config:clearautoload() then
+							selectedautoloadname = ""
+							autostatus:SetContent("Auto Load: None")
+							updatestatus()
+							chloex("Auto load cleared", 3, Color3.fromRGB(100, 255, 100))
+						end
+					end,
+				})
+
+				items:AddSubSection("Folder Management")
+
+				local folderdropdown = items:AddDropdown({
+					Title = "Config Folder",
+					Multi = false,
+					Options = getfolders(),
+					Callback = function(value)
+						if not value or value == "" then
+							return
+						end
+
+						selectedfoldername = value
+						config.gamefolder = "Chloe X/" .. value
+						config.autoloadfile = config.gamefolder .. "/autoload.txt"
+
+						if not isfolder(config.gamefolder) then
+							makefolder(config.gamefolder)
+						end
+
+						setdropdownlist(configdropdown, config:getlist())
+						setdropdownlist(autoloaddropdown, config:getlist())
+						updatestatus()
+						autostatus:SetContent("Auto Load: " .. (config:getautoload() or "None"))
+						chloex("Config folder changed: " .. value, 3, Color3.fromRGB(100, 255, 100))
 					end,
 				})
 
 				items:AddButton({
 					Title = "Export Config",
 					Callback = function()
-						if not setclipboard then
-							chloex("Clipboard not supported", 3, Color3.fromRGB(255, 100, 100))
-							return
-						end
-
 						config.data._version = config.version
 						local json = sv.http:JSONEncode(config.data)
 
@@ -3122,19 +3182,16 @@ function Chloex:Window(guiconfig)
 					end,
 				})
 
-				items:AddSubSection("Load From External")
-
 				items:AddInput({
-					Title = "Input External Config",
-					Content = "Paste raw JSON config here",
-					Placeholder = '{ "Toggle_AutoFish": true }',
+					Title = "External Config",
+					Placeholder = "Paste raw JSON config here",
 				})
 
 				items:AddButton({
 					Title = "Import Config",
 					Callback = function()
-						local inputval = config.elements["Input_Input External Config"]
-						local json = inputval and inputval.Value
+						local input = config.elements["Input_External Config"]
+						local json = input and input.Value
 
 						if not json or json == "" then
 							chloex("External config JSON kosong", 3, Color3.fromRGB(255, 100, 100))
@@ -3148,10 +3205,8 @@ function Chloex:Window(guiconfig)
 						end)
 
 						if ok then
+							updatestatus()
 							chloex("External config loaded successfully", 3, Color3.fromRGB(100, 255, 100))
-							statusparagraph:SetContent(
-								"Current: External JSON | Autoload: " .. (config:getautoload() or "None")
-							)
 						else
 							warn(err)
 							chloex("Failed to load external JSON", 3, Color3.fromRGB(255, 100, 100))
@@ -3159,17 +3214,23 @@ function Chloex:Window(guiconfig)
 					end,
 				})
 
-				return {
-					UpdateStatus = function()
-						statusparagraph:SetContent(
-							"Current: "
-								.. (config.current or "None")
-								.. " | Autoload: "
-								.. (config:getautoload() or "None")
-						)
+				items:AddSubSection("Reset Configuration")
+
+				items:AddButton({
+					Title = "Reset All To Default",
+					Callback = function()
+						config:reset()
+						updatestatus()
+						chloex("All elements reset to default", 3, Color3.fromRGB(100, 255, 100))
 					end,
+				})
+
+				return {
+					UpdateStatus = updatestatus,
 					RefreshList = function()
-						configdropdown:Set(config:getlist())
+						setdropdownlist(configdropdown, config:getlist())
+						setdropdownlist(autoloaddropdown, config:getlist())
+						setdropdownlist(folderdropdown, getfolders())
 					end,
 				}
 			end
