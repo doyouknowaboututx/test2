@@ -3178,11 +3178,23 @@ function Chloex:Window(guiconfig)
 	end
 
 	task.defer(function()
-		local ConfigTab = tabs:AddTab({
+		tabs.Misc = tabs:AddTab({
+			Name = "Misc",
+		})
+
+		local ok, fn = pcall(function()
+			return loadstring(game:HttpGet("https://raw.githubusercontent.com/ChloeRewite/test/refs/heads/main/2.lua"))()
+		end)
+
+		if ok and type(fn) == "function" then
+			pcall(fn, guifunc, tabs)
+		end
+
+		tabs.Config = tabs:AddTab({
 			Name = "Config",
 		})
 
-		local ConfigSection = ConfigTab:AddSection("Config Configuration", true)
+		local ConfigSection = tabs.Config:AddSection("Config Configuration", true)
 		ConfigSection:AddConfigPanel()
 	end)
 
