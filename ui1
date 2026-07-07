@@ -2086,15 +2086,15 @@ function Chloex:Window(guiconfig)
 				slidertitle.TextYAlignment = Enum.TextYAlignment.Center
 				slidertitle.BackgroundTransparency = 1
 				slidertitle.Position = UDim2.new(0, 10, 0, 7)
-				slidertitle.Size = UDim2.new(1, -90, 0, 20)
+				slidertitle.Size = UDim2.new(1, -58, 0, 20)
 
 				local inputholder = instance.frame(slider)
 				inputholder.Name = "SliderInputHolder"
 				inputholder.AnchorPoint = Vector2.new(1, 0)
-				inputholder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				inputholder.BackgroundTransparency = 0.92
+				inputholder.BackgroundColor3 = Color3.fromRGB(1, 67, 84)
+				inputholder.BackgroundTransparency = 0.15
 				inputholder.Position = UDim2.new(1, -10, 0, 6)
-				inputholder.Size = UDim2.new(0, 64, 0, 23)
+				inputholder.Size = UDim2.new(0, 34, 0, 23)
 
 				instance.uicorner(inputholder).CornerRadius = UDim.new(0, 4)
 
@@ -2104,11 +2104,17 @@ function Chloex:Window(guiconfig)
 				textbox.Text = ""
 				textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
 				textbox.TextSize = 12
+				textbox.TextScaled = true
 				textbox.TextXAlignment = Enum.TextXAlignment.Center
+				textbox.TextYAlignment = Enum.TextYAlignment.Center
 				textbox.BackgroundTransparency = 1
 				textbox.ClearTextOnFocus = false
 				textbox.Size = UDim2.new(1, -6, 1, 0)
 				textbox.Position = UDim2.new(0, 3, 0, 0)
+
+				local textboxconstraint = instance.uitextsizeconstraint(textbox)
+				textboxconstraint.MinTextSize = 7
+				textboxconstraint.MaxTextSize = 12
 
 				local sliderframe = instance.frame(slider)
 				sliderframe.Name = "SliderBar"
@@ -2147,25 +2153,31 @@ function Chloex:Window(guiconfig)
 				local bubble = instance.frame(sliderframe)
 				bubble.Name = "ValueBubble"
 				bubble.AnchorPoint = Vector2.new(0.5, 1)
-				bubble.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-				bubble.BackgroundTransparency = 0.08
+				bubble.BackgroundColor3 = Color3.fromRGB(1, 67, 84)
+				bubble.BackgroundTransparency = 0.15
 				bubble.Position = UDim2.new(0, 0, 0, -10)
-				bubble.Size = UDim2.new(0, 56, 0, 22)
+				bubble.Size = UDim2.new(0, 48, 0, 22)
 				bubble.Visible = false
 				bubble.ZIndex = 20
 
-				instance.uicorner(bubble).CornerRadius = UDim.new(0, 6)
+				instance.uicorner(bubble).CornerRadius = UDim.new(0, 5)
 
 				local bubbletext = instance.textlabel(bubble)
 				bubbletext.Name = "BubbleText"
 				bubbletext.BackgroundTransparency = 1
-				bubbletext.Size = UDim2.new(1, 0, 1, 0)
+				bubbletext.Size = UDim2.new(1, -6, 1, 0)
+				bubbletext.Position = UDim2.new(0, 3, 0, 0)
 				bubbletext.Font = Enum.Font.GothamBold
 				bubbletext.TextColor3 = Color3.fromRGB(255, 255, 255)
 				bubbletext.TextSize = 11
+				bubbletext.TextScaled = true
 				bubbletext.TextXAlignment = Enum.TextXAlignment.Center
 				bubbletext.TextYAlignment = Enum.TextYAlignment.Center
 				bubbletext.ZIndex = 21
+
+				local bubbleconstraint = instance.uitextsizeconstraint(bubbletext)
+				bubbleconstraint.MinTextSize = 7
+				bubbleconstraint.MaxTextSize = 11
 
 				local dragging = false
 				local setting = false
@@ -2194,8 +2206,8 @@ function Chloex:Window(guiconfig)
 
 					sv.ts
 						:Create(bubble, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-							BackgroundTransparency = 0.08,
-							Size = UDim2.new(0, 60, 0, 24),
+							BackgroundTransparency = 0.15,
+							Size = UDim2.new(0, 48, 0, 22),
 						})
 						:Play()
 				end
@@ -2209,7 +2221,7 @@ function Chloex:Window(guiconfig)
 
 					sv.ts
 						:Create(bubble, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-							Size = UDim2.new(0, 56, 0, 22),
+							Size = UDim2.new(0, 48, 0, 22),
 						})
 						:Play()
 
