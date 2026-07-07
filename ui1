@@ -1350,7 +1350,7 @@ function Chloex:Window(guiconfig)
 	searchlayer.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
 	searchlayer.BackgroundTransparency = 0.05
 	searchlayer.BorderSizePixel = 0
-	searchlayer.BackgroundTransparency = 0.45
+	searchlayer.BackgroundTransparency = 0.1
 	searchlayer.Size = UDim2.new(1, 0, 1, 0)
 	searchlayer.Visible = false
 	searchlayer.ZIndex = 60
@@ -1369,7 +1369,7 @@ function Chloex:Window(guiconfig)
 	searchbox.BackgroundTransparency = 0.92
 	searchbox.BorderSizePixel = 0
 	searchbox.AnchorPoint = Vector2.new(1, 0)
-	searchbox.Position = UDim2.new(1, -10, 0, 10)
+	searchbox.Position = UDim2.new(1, -15, 0, 10)
 	searchbox.Size = UDim2.new(0, 190, 0, 30)
 	searchbox.ClearTextOnFocus = false
 	searchbox.ZIndex = 61
@@ -1383,6 +1383,7 @@ function Chloex:Window(guiconfig)
 	resultscroll.Position = UDim2.new(0, 10, 0, 50)
 	resultscroll.Size = UDim2.new(1, -20, 1, -60)
 	resultscroll.ScrollBarThickness = 3
+	resultscroll.ScrollBarImageTransparency = 0.5
 	resultscroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 	resultscroll.ZIndex = 61
 
