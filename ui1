@@ -696,6 +696,7 @@ function Chloex:Window(guiconfig)
 	guiconfig.Color = guiconfig.Color or Color3.fromRGB(0, 208, 255)
 	guiconfig["Tab Width"] = guiconfig["Tab Width"] or 120
 	guiconfig.Version = guiconfig.Version or 1
+	guiconfig.Image = guiconfig.Image or "132435516080103"
 
 	local foldername = guiconfig.Folder or guiconfig.Title:gsub("[^%w_ ]", ""):gsub("%s+", "_")
 	config.gamefolder = "Chloe X/" .. foldername
@@ -1182,7 +1183,7 @@ function Chloex:Window(guiconfig)
 		mainbutton.Size = UDim2.new(0, 40, 0, 40)
 		mainbutton.Position = UDim2.new(0, 20, 0, 100)
 		mainbutton.BackgroundTransparency = 1
-		mainbutton.Image = "rbxassetid://" .. guiconfig.Image
+		mainbutton.Image = "rbxassetid://" .. tostring(guiconfig.Image)
 		mainbutton.ScaleType = Enum.ScaleType.Fit
 
 		local uicorner = instance.uicorner(mainbutton)
