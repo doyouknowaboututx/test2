@@ -871,7 +871,7 @@ function Chloex:Window(guiconfig)
 	search.BackgroundTransparency = 0.999
 	search.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	search.BorderSizePixel = 0
-	search.Position = UDim2.new(1, -68, 0.5, 0)
+	search.Position = UDim2.new(1, -58, 0.5, 0)
 	search.Size = UDim2.new(0, 25, 0, 25)
 
 	local searchicon = instance.imagelabel(search)
@@ -1350,6 +1350,7 @@ function Chloex:Window(guiconfig)
 	searchlayer.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
 	searchlayer.BackgroundTransparency = 0.05
 	searchlayer.BorderSizePixel = 0
+	searchlayer.BackgroundTransparency = main.BackgroundTransparency
 	searchlayer.Size = UDim2.new(1, 0, 1, 0)
 	searchlayer.Visible = false
 	searchlayer.ZIndex = 60
