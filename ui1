@@ -2974,61 +2974,43 @@ function Chloex:Window(guiconfig)
 
 			function items:AddConfigPanel()
 				local selectedconfigname = config.current or ""
-				local selectedautoloadname = config:getautoload() or ""
-				local selectedfoldername = config.gamefolder and config.gamefolder:match("Chloe X/(.+)") or ""
-
-				local function getfolders()
-					local folders = {}
-
-					if isfolder and listfiles and isfolder("Chloe X") then
-						for _, path in ipairs(listfiles("Chloe X")) do
-							local name = path:match("Chloe X[/\\](.+)$")
-							if name and isfolder(path) then
-								table.insert(folders, name)
-							end
-						end
-					end
-
-					if #folders == 0 and selectedfoldername ~= "" then
-						table.insert(folders, selectedfoldername)
-					end
-
-					return folders
-				end
+				local configdropdown
 
 				local function setdropdownlist(dropdown, list)
-					if dropdown.Refresh then
+					if dropdown and dropdown.Refresh then
 						dropdown:Refresh(list)
-					elseif dropdown.SetValues then
+					elseif dropdown and dropdown.SetValues then
 						dropdown:SetValues(list, dropdown.Value)
 					end
 				end
 
-				local statusparagraph = items:AddParagraph({
+				local function refreshconfiglist()
+					setdropdownlist(configdropdown, config:getlist())
+				end
+
+				local saveparagraph = items:AddParagraph({
 					Title = "Config Manager",
-					Content = "Save: "
-						.. (config.current or "None")
-						.. " | Auto Load: "
-						.. (config:getautoload() or "None"),
+					Content = "Save: " .. (config.current or "None"),
 				})
 
 				local function updatestatus()
-					statusparagraph:SetContent(
-						"Save: " .. (config.current or "None") .. " | Auto Load: " .. (config:getautoload() or "None")
-					)
+					saveparagraph:SetContent("Save: " .. (config.current or "None"))
 				end
 
-				items:AddInput({
+				local confignameinput = items:AddInput({
 					Title = "Config Name",
 					Placeholder = "Write config name here",
 				})
 
-				local configdropdown = items:AddDropdown({
+				configdropdown = items:AddDropdown({
 					Title = "Select Config",
 					Multi = false,
 					Options = config:getlist(),
 					Callback = function(value)
 						selectedconfigname = value or ""
+						if selectedconfigname ~= "" then
+							confignameinput:Set(selectedconfigname)
+						end
 					end,
 				})
 
@@ -3046,7 +3028,7 @@ function Chloex:Window(guiconfig)
 
 						if config:save(name) then
 							selectedconfigname = name
-							setdropdownlist(configdropdown, config:getlist())
+							refreshconfiglist()
 							updatestatus()
 							chloex("Config saved: " .. name, 3, Color3.fromRGB(100, 255, 100))
 						end
@@ -3075,29 +3057,21 @@ function Chloex:Window(guiconfig)
 
 						if config:delete(selectedconfigname) then
 							selectedconfigname = ""
-							setdropdownlist(configdropdown, config:getlist())
+							refreshconfiglist()
 							updatestatus()
 							chloex("Config deleted", 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 					SubCallback = function()
-						local input = config.elements["Input_Config Name"]
-						local name = input and input.Value or ""
-
-						if name == "" then
-							name = selectedconfigname
-						end
-
-						if not name or name == "" then
-							chloex("Input or select config first", 3, Color3.fromRGB(255, 100, 100))
+						if selectedconfigname == "" then
+							chloex("Select config first", 3, Color3.fromRGB(255, 100, 100))
 							return
 						end
 
-						if config:save(name) then
-							selectedconfigname = name
-							setdropdownlist(configdropdown, config:getlist())
+						if config:save(selectedconfigname) then
+							refreshconfiglist()
 							updatestatus()
-							chloex("Config overridden: " .. name, 3, Color3.fromRGB(100, 255, 100))
+							chloex("Config overridden: " .. selectedconfigname, 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 				})
@@ -3109,66 +3083,29 @@ function Chloex:Window(guiconfig)
 					Content = "Auto Load: " .. (config:getautoload() or "None"),
 				})
 
-				local autoloaddropdown = items:AddDropdown({
-					Title = "Select Auto-Load Config",
-					Multi = false,
-					Options = config:getlist(),
-					Callback = function(value)
-						selectedautoloadname = value or ""
-					end,
-				})
-
 				items:AddButton({
 					Title = "Set Auto Load",
 					SubTitle = "Clear Auto Load",
 					Callback = function()
-						if selectedautoloadname == "" then
-							chloex("Select auto-load config first", 3, Color3.fromRGB(255, 100, 100))
+						if selectedconfigname == "" then
+							chloex("Select config first", 3, Color3.fromRGB(255, 100, 100))
 							return
 						end
 
-						if config:setautoload(selectedautoloadname) then
-							autostatus:SetContent("Auto Load: " .. selectedautoloadname)
-							updatestatus()
-							chloex("Auto load set: " .. selectedautoloadname, 3, Color3.fromRGB(100, 255, 100))
+						if config:setautoload(selectedconfigname) then
+							autostatus:SetContent("Auto Load: " .. selectedconfigname)
+							chloex("Auto load set: " .. selectedconfigname, 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 					SubCallback = function()
 						if config:clearautoload() then
-							selectedautoloadname = ""
 							autostatus:SetContent("Auto Load: None")
-							updatestatus()
 							chloex("Auto load cleared", 3, Color3.fromRGB(100, 255, 100))
 						end
 					end,
 				})
 
 				items:AddSubSection("Folder Management")
-
-				local folderdropdown = items:AddDropdown({
-					Title = "Config Folder",
-					Multi = false,
-					Options = getfolders(),
-					Callback = function(value)
-						if not value or value == "" then
-							return
-						end
-
-						selectedfoldername = value
-						config.gamefolder = "Chloe X/" .. value
-						config.autoloadfile = config.gamefolder .. "/autoload.txt"
-
-						if not isfolder(config.gamefolder) then
-							makefolder(config.gamefolder)
-						end
-
-						setdropdownlist(configdropdown, config:getlist())
-						setdropdownlist(autoloaddropdown, config:getlist())
-						updatestatus()
-						autostatus:SetContent("Auto Load: " .. (config:getautoload() or "None"))
-						chloex("Config folder changed: " .. value, 3, Color3.fromRGB(100, 255, 100))
-					end,
-				})
 
 				items:AddButton({
 					Title = "Export Config",
@@ -3226,11 +3163,7 @@ function Chloex:Window(guiconfig)
 
 				return {
 					UpdateStatus = updatestatus,
-					RefreshList = function()
-						setdropdownlist(configdropdown, config:getlist())
-						setdropdownlist(autoloaddropdown, config:getlist())
-						setdropdownlist(folderdropdown, getfolders())
-					end,
+					RefreshList = refreshconfiglist,
 				}
 			end
 
@@ -3243,6 +3176,15 @@ function Chloex:Window(guiconfig)
 		_G[safename] = sections
 		return sections
 	end
+
+	task.defer(function()
+		local ConfigTab = tabs:AddTab({
+			Name = "Config",
+		})
+
+		local ConfigSection = ConfigTab:AddSection("Config Configuration", true)
+		ConfigSection:AddConfigPanel()
+	end)
 
 	return tabs
 end
