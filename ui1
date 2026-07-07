@@ -3176,7 +3176,7 @@ function Chloex:Window(guiconfig)
 		_G[safename] = sections
 		return sections
 	end
-
+	
 	task.defer(function()
 		tabs.Misc = tabs:AddTab({
 			Name = "Misc",
