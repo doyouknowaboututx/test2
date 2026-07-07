@@ -860,6 +860,28 @@ function Chloex:Window(guiconfig)
 	imagelabel2.Position = UDim2.new(0.5, 0, 0.5, 0)
 	imagelabel2.Size = UDim2.new(1, -9, 1, -9)
 
+	local search = instance.textbutton(top)
+	search.Name = "Search"
+	search.Font = Enum.Font.SourceSans
+	search.Text = ""
+	search.TextColor3 = Color3.fromRGB(0, 0, 0)
+	search.TextSize = 14
+	search.AnchorPoint = Vector2.new(1, 0.5)
+	search.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	search.BackgroundTransparency = 0.999
+	search.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	search.BorderSizePixel = 0
+	search.Position = UDim2.new(1, -68, 0.5, 0)
+	search.Size = UDim2.new(0, 25, 0, 25)
+
+	local searchicon = instance.imagelabel(search)
+	searchicon.Image = "rbxassetid://11496279085"
+	searchicon.AnchorPoint = Vector2.new(0.5, 0.5)
+	searchicon.BackgroundTransparency = 1
+	searchicon.ImageTransparency = 0.2
+	searchicon.Position = UDim2.new(0.5, 0, 0.5, 0)
+	searchicon.Size = UDim2.new(1, -8, 1, -8)
+
 	local layerstab = instance.frame(main)
 	layerstab.Name = "LayersTab"
 	layerstab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1217,6 +1239,10 @@ function Chloex:Window(guiconfig)
 
 	guifunc:ToggleUI()
 
+	local tabs = {}
+	local searchItems = {}
+	local counttab = 0
+	local countdropdown = 0
 	dropshadowholder.Size = UDim2.new(0, 115 + textlabel.TextBounds.X + 1 + textlabel1.TextBounds.X, 0, 350)
 	makedraggable(top, dropshadowholder)
 
@@ -1319,9 +1345,139 @@ function Chloex:Window(guiconfig)
 	droppagelayout.FillDirection = Enum.FillDirection.Vertical
 	droppagelayout.Archivable = false
 
-	local tabs = {}
-	local counttab = 0
-	local countdropdown = 0
+	local searchlayer = instance.frame(layers)
+	searchlayer.Name = "SearchLayer"
+	searchlayer.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
+	searchlayer.BackgroundTransparency = 0.05
+	searchlayer.BorderSizePixel = 0
+	searchlayer.Size = UDim2.new(1, 0, 1, 0)
+	searchlayer.Visible = false
+	searchlayer.ZIndex = 60
+
+	instance.uicorner(searchlayer).CornerRadius = UDim.new(0, 6)
+
+	local searchbox = instance.textbox(searchlayer)
+	searchbox.Name = "SearchBox"
+	searchbox.PlaceholderText = "Search..."
+	searchbox.Text = ""
+	searchbox.Font = Enum.Font.GothamBold
+	searchbox.TextSize = 13
+	searchbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	searchbox.PlaceholderColor3 = Color3.fromRGB(160, 160, 160)
+	searchbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	searchbox.BackgroundTransparency = 0.92
+	searchbox.BorderSizePixel = 0
+	searchbox.AnchorPoint = Vector2.new(1, 0)
+	searchbox.Position = UDim2.new(1, -10, 0, 10)
+	searchbox.Size = UDim2.new(0, 190, 0, 30)
+	searchbox.ClearTextOnFocus = false
+	searchbox.ZIndex = 61
+
+	instance.uicorner(searchbox).CornerRadius = UDim.new(0, 5)
+
+	local resultscroll = instance.scrollingframe(searchlayer)
+	resultscroll.Name = "ResultScroll"
+	resultscroll.BackgroundTransparency = 1
+	resultscroll.BorderSizePixel = 0
+	resultscroll.Position = UDim2.new(0, 10, 0, 50)
+	resultscroll.Size = UDim2.new(1, -20, 1, -60)
+	resultscroll.ScrollBarThickness = 3
+	resultscroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+	resultscroll.ZIndex = 61
+
+	local resultlayout = instance.uilistlayout(resultscroll)
+	resultlayout.Padding = UDim.new(0, 5)
+	resultlayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	local function refreshSearch()
+		for _, v in ipairs(resultscroll:GetChildren()) do
+			if not v:IsA("UIListLayout") then
+				v:Destroy()
+			end
+		end
+
+		local keyword = string.lower(searchbox.Text or "")
+		if keyword == "" then
+			resultscroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+			return
+		end
+
+		for _, data in ipairs(searchItems) do
+			if
+				string.find(string.lower(data.Name), keyword, 1, true)
+				or string.find(string.lower(data.Path), keyword, 1, true)
+			then
+				local item = instance.textbutton(resultscroll)
+				item.Name = "SearchResult - " .. data.Name
+				item.Text = ""
+				item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				item.BackgroundTransparency = 0.935
+				item.BorderSizePixel = 0
+				item.Size = UDim2.new(1, -6, 0, 46)
+				item.ZIndex = 62
+
+				instance.uicorner(item).CornerRadius = UDim.new(0, 5)
+
+				local title = instance.textlabel(item)
+				title.Name = "Title"
+				title.Text = data.Name
+				title.Font = Enum.Font.GothamBold
+				title.TextSize = 13
+				title.TextColor3 = Color3.fromRGB(255, 255, 255)
+				title.TextXAlignment = Enum.TextXAlignment.Left
+				title.BackgroundTransparency = 1
+				title.Position = UDim2.new(0, 10, 0, 7)
+				title.Size = UDim2.new(1, -20, 0, 14)
+				title.ZIndex = 63
+
+				local path = instance.textlabel(item)
+				path.Name = "Path"
+				path.Text = data.Path
+				path.Font = Enum.Font.Gotham
+				path.TextSize = 11
+				path.TextColor3 = Color3.fromRGB(150, 150, 150)
+				path.TextXAlignment = Enum.TextXAlignment.Left
+				path.BackgroundTransparency = 1
+				path.Position = UDim2.new(0, 10, 0, 25)
+				path.Size = UDim2.new(1, -20, 0, 13)
+				path.ZIndex = 63
+
+				item.Activated:Connect(function()
+					searchlayer.Visible = false
+					searchbox.Text = ""
+
+					layerspagelayout:JumpToIndex(data.TabIndex)
+
+					if data.OpenSection then
+						data.OpenSection()
+					end
+
+					task.wait(0.15)
+
+					if data.Page and data.Object then
+						local y = data.Object.AbsolutePosition.Y
+							- data.Page.AbsolutePosition.Y
+							+ data.Page.CanvasPosition.Y
+							- 20
+						data.Page.CanvasPosition = Vector2.new(0, math.max(0, y))
+					end
+				end)
+			end
+		end
+
+		task.wait()
+		resultscroll.CanvasSize = UDim2.new(0, 0, 0, resultlayout.AbsoluteContentSize.Y + 5)
+	end
+
+	searchbox:GetPropertyChangedSignal("Text"):Connect(refreshSearch)
+
+	search.Activated:Connect(function()
+		searchlayer.Visible = not searchlayer.Visible
+		if searchlayer.Visible then
+			searchbox:CaptureFocus()
+			refreshSearch()
+		end
+	end)
 
 	function tabs:AddTab(tabconfig)
 		tabconfig = tabconfig or {}
@@ -1589,6 +1745,32 @@ function Chloex:Window(guiconfig)
 
 			local items = {}
 			local countitem = 0
+			local currentSubSection = nil
+
+			local function registerSearchItem(title, object)
+				title = tostring(title or "Item")
+
+				local path = tabconfig.Name .. "/" .. sectiontitletext
+				if currentSubSection then
+					path = path .. "/" .. currentSubSection
+				end
+				path = path .. "/" .. title
+
+				table.insert(searchItems, {
+					Name = title,
+					Path = path,
+					TabIndex = scrollayers.LayoutOrder,
+					Page = scrollayers,
+					Section = section,
+					Object = object,
+					OpenSection = function()
+						if not opensection then
+							opensection = true
+							updatesizesection()
+						end
+					end,
+				})
+			end
 
 			function items:AddParagraph(paragraphconfig)
 				paragraphconfig = paragraphconfig or {}
@@ -1688,6 +1870,7 @@ function Chloex:Window(guiconfig)
 					updatesize()
 				end
 
+				registerSearchItem(paragraphconfig.Title, paragraph)
 				countitem = countitem + 1
 				return paragraphfunc
 			end
@@ -1857,7 +2040,7 @@ function Chloex:Window(guiconfig)
 				end
 
 				mainbutton.MouseButton1Down:Connect(function()
-					pcall(pesseffect, mainbutton) -- lihat catatan di bawah soal fungsi ini
+					pcall(pesseffect, mainbutton)
 				end)
 
 				mainbutton.MouseButton1Click:Connect(function()
@@ -1885,8 +2068,10 @@ function Chloex:Window(guiconfig)
 					subbutton.MouseButton1Click:Connect(function()
 						pcall(buttonconfig.SubCallback)
 					end)
+					registerSearchItem(buttonconfig.SubTitle, button)
 				end
 
+				registerSearchItem(buttonconfig.Title, button)
 				countitem += 1
 			end
 
@@ -2009,6 +2194,7 @@ function Chloex:Window(guiconfig)
 				togglefunc:Set(togglefunc.Value)
 				countitem = countitem + 1
 				config.elements[configkey] = togglefunc
+				registerSearchItem(toggleconfig.Title, toggle)
 				return togglefunc
 			end
 
@@ -2340,7 +2526,7 @@ function Chloex:Window(guiconfig)
 
 				countitem = countitem + 1
 				config.elements[configkey] = sliderfunc
-
+				registerSearchItem(sliderconfig.Title, slider)
 				return sliderfunc
 			end
 
@@ -2419,6 +2605,7 @@ function Chloex:Window(guiconfig)
 
 				countitem += 1
 				config.elements[configkey] = inputfunc
+				registerSearchItem(inputconfig.Title, inputcontainer)
 				return inputfunc
 			end
 
@@ -2723,6 +2910,7 @@ function Chloex:Window(guiconfig)
 				countitem = countitem + 1
 				countdropdown = countdropdown + 1
 				config.elements[configkey] = dropdownfunc
+				registerSearchItem(dropdownconfig.Title, dropdown)
 				return dropdownfunc
 			end
 
@@ -2778,6 +2966,7 @@ function Chloex:Window(guiconfig)
 				label.TextXAlignment = Enum.TextXAlignment.Left
 
 				countitem = countitem + 1
+				currentSubSection = tostring(sectiontext)
 				return subsection
 			end
 
