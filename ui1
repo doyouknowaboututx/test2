@@ -1329,6 +1329,11 @@ function Chloex:Window(guiconfig)
 			elementHud = nil
 		end
 
+		if footerOverlay then
+			footerOverlay:Destroy()
+			footerOverlay = nil
+		end
+
 		if statConn then
 			statConn:Disconnect()
 			statConn = nil
@@ -1336,6 +1341,10 @@ function Chloex:Window(guiconfig)
 
 		if sv.coregui:FindFirstChild("Chloeex") then
 			chloeex:Destroy()
+		end
+
+		if sv.coregui:FindFirstChild("ToggleUIButton") then
+			sv.coregui.ToggleUIButton:Destroy()
 		end
 	end
 
@@ -1437,12 +1446,7 @@ function Chloex:Window(guiconfig)
 		cancelcorner.CornerRadius = UDim.new(0, 6)
 
 		yes.MouseButton1Click:Connect(function()
-			if chloeex then
-				chloeex:Destroy()
-			end
-			if sv.coregui:FindFirstChild("ToggleUIButton") then
-				sv.coregui.ToggleUIButton:Destroy()
-			end
+			guifunc:DestroyGui()
 		end)
 
 		cancel.MouseButton1Click:Connect(function()
