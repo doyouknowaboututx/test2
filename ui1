@@ -1019,6 +1019,240 @@ function Chloex:Window(guiconfig)
 
 	username.Text = "Welcome, " .. shortname
 
+	local useroptions = {
+		ShowStatistic = false,
+		ShowIdent = false,
+		ShowElement = false,
+	}
+
+	local serverStart = os.clock()
+	local activeToggles = {}
+	local elementHud
+	local statConn
+
+	local footerstat = instance.textlabel(userfooter)
+	footerstat.Name = "FooterStatistic"
+	footerstat.BackgroundTransparency = 1
+	footerstat.Font = Enum.Font.GothamBold
+	footerstat.TextColor3 = Color3.fromRGB(255, 255, 255)
+	footerstat.TextTransparency = 0.25
+	footerstat.TextSize = 11
+	footerstat.TextXAlignment = Enum.TextXAlignment.Right
+	footerstat.Position = UDim2.new(0, 160, 0, 0)
+	footerstat.Size = UDim2.new(1, -170, 1, 0)
+	footerstat.Text = ""
+	footerstat.Visible = false
+
+	local footerclick = instance.textbutton(userfooter)
+	footerclick.Name = "UserFooterClick"
+	footerclick.BackgroundTransparency = 1
+	footerclick.Text = ""
+	footerclick.Size = UDim2.new(1, 0, 1, 0)
+	footerclick.ZIndex = 20
+
+	local function formatTime(sec)
+		local h = math.floor(sec / 3600)
+		local m = math.floor((sec % 3600) / 60)
+		local s = math.floor(sec % 60)
+		return string.format("%dh %dm %ds", h, m, s)
+	end
+
+	local function updateIdent()
+		if useroptions.ShowIdent then
+			username.Text = "Welcome, " .. rawname
+		else
+			username.Text = "Welcome, " .. shortname
+		end
+	end
+
+	local function updateElementHud()
+		if not useroptions.ShowElement then
+			if elementHud then
+				elementHud:Destroy()
+				elementHud = nil
+			end
+			return
+		end
+
+		if not elementHud then
+			elementHud = instance.screengui(sv.coregui)
+			elementHud.Name = "ChloeX_ActiveElements"
+			elementHud.ResetOnSpawn = false
+			elementHud.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+			local mainhud = instance.frame(elementHud)
+			mainhud.Name = "Main"
+			mainhud.Position = UDim2.new(1, -250, 0, 90)
+			mainhud.Size = UDim2.new(0, 230, 0, 180)
+			mainhud.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
+			mainhud.BackgroundTransparency = 0.1
+			mainhud.BorderSizePixel = 0
+			instance.uicorner(mainhud).CornerRadius = UDim.new(0, 6)
+
+			local scroll = instance.scrollingframe(mainhud)
+			scroll.Name = "Scroll"
+			scroll.BackgroundTransparency = 1
+			scroll.BorderSizePixel = 0
+			scroll.Size = UDim2.new(1, -10, 1, -10)
+			scroll.Position = UDim2.new(0, 5, 0, 5)
+			scroll.ScrollBarThickness = 3
+			scroll.ScrollBarImageTransparency = 0.5
+
+			local layout = instance.uilistlayout(scroll)
+			layout.Padding = UDim.new(0, 4)
+			layout.SortOrder = Enum.SortOrder.LayoutOrder
+		end
+
+		local scroll = elementHud.Main.Scroll
+		for _, v in ipairs(scroll:GetChildren()) do
+			if not v:IsA("UIListLayout") then
+				v:Destroy()
+			end
+		end
+
+		for title, togglefunc in pairs(activeToggles) do
+			local row = instance.frame(scroll)
+			row.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			row.BackgroundTransparency = 0.92
+			row.BorderSizePixel = 0
+			row.Size = UDim2.new(1, -6, 0, 32)
+			instance.uicorner(row).CornerRadius = UDim.new(0, 5)
+
+			local label = instance.textlabel(row)
+			label.BackgroundTransparency = 1
+			label.Font = Enum.Font.GothamBold
+			label.Text = title
+			label.TextColor3 = Color3.fromRGB(255, 255, 255)
+			label.TextSize = 12
+			label.TextXAlignment = Enum.TextXAlignment.Left
+			label.Position = UDim2.new(0, 8, 0, 0)
+			label.Size = UDim2.new(1, -45, 1, 0)
+
+			local closebtn = instance.textbutton(row)
+			closebtn.BackgroundTransparency = 1
+			closebtn.Font = Enum.Font.GothamBold
+			closebtn.Text = "X"
+			closebtn.TextColor3 = Color3.fromRGB(255, 120, 120)
+			closebtn.TextSize = 13
+			closebtn.Position = UDim2.new(1, -34, 0, 0)
+			closebtn.Size = UDim2.new(0, 30, 1, 0)
+
+			closebtn.Activated:Connect(function()
+				if togglefunc and togglefunc.Set then
+					togglefunc:Set(false)
+				end
+			end)
+		end
+
+		task.wait()
+		scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 8)
+	end
+
+	local function setStatistic(state)
+		footerstat.Visible = state
+
+		if statConn then
+			statConn:Disconnect()
+			statConn = nil
+		end
+
+		if state then
+			local acc = 0
+			statConn = game:GetService("RunService").Heartbeat:Connect(function(dt)
+				acc += dt
+				if acc < 0.5 then
+					return
+				end
+				acc = 0
+
+				local fps = math.floor(1 / math.max(dt, 0.001))
+				local cpu = math.floor(dt * 1000)
+				local uptime = formatTime(os.clock() - serverStart)
+
+				footerstat.Text = "FPS: " .. fps .. " | CPU: " .. cpu .. "ms | " .. uptime
+			end)
+		else
+			footerstat.Text = ""
+		end
+	end
+
+	local footerOverlay
+
+	local function makeFooterToggle(parent, text, key, callback)
+		local btn = instance.textbutton(parent)
+		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		btn.BackgroundTransparency = 0.93
+		btn.BorderSizePixel = 0
+		btn.Size = UDim2.new(1, 0, 0, 30)
+		btn.Text = ""
+		instance.uicorner(btn).CornerRadius = UDim.new(0, 5)
+
+		local label = instance.textlabel(btn)
+		label.BackgroundTransparency = 1
+		label.Font = Enum.Font.GothamBold
+		label.TextColor3 = Color3.fromRGB(255, 255, 255)
+		label.TextSize = 12
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.Position = UDim2.new(0, 8, 0, 0)
+		label.Size = UDim2.new(1, -50, 1, 0)
+
+		local mark = instance.textlabel(btn)
+		mark.BackgroundTransparency = 1
+		mark.Font = Enum.Font.GothamBold
+		mark.TextColor3 = guiconfig.Color
+		mark.TextSize = 13
+		mark.TextXAlignment = Enum.TextXAlignment.Right
+		mark.Position = UDim2.new(1, -38, 0, 0)
+		mark.Size = UDim2.new(0, 30, 1, 0)
+
+		local function refresh()
+			label.Text = text
+			mark.Text = useroptions[key] and "ON" or "OFF"
+		end
+
+		btn.Activated:Connect(function()
+			useroptions[key] = not useroptions[key]
+			refresh()
+			if callback then
+				callback(useroptions[key])
+			end
+		end)
+
+		refresh()
+	end
+
+	footerclick.Activated:Connect(function()
+		if footerOverlay then
+			footerOverlay:Destroy()
+			footerOverlay = nil
+			return
+		end
+
+		footerOverlay = instance.frame(main)
+		footerOverlay.Name = "FooterOverlay"
+		footerOverlay.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
+		footerOverlay.BackgroundTransparency = 0.08
+		footerOverlay.BorderSizePixel = 0
+		footerOverlay.Position = UDim2.new(0, 10, 1, -170)
+		footerOverlay.Size = UDim2.new(0, 230, 0, 125)
+		footerOverlay.ZIndex = 80
+		instance.uicorner(footerOverlay).CornerRadius = UDim.new(0, 6)
+
+		local layout = instance.uilistlayout(footerOverlay)
+		layout.Padding = UDim.new(0, 5)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+		local pad = instance.uipadding(footerOverlay)
+		pad.PaddingTop = UDim.new(0, 8)
+		pad.PaddingBottom = UDim.new(0, 8)
+		pad.PaddingLeft = UDim.new(0, 8)
+		pad.PaddingRight = UDim.new(0, 8)
+
+		makeFooterToggle(footerOverlay, "Show Statistic", "ShowStatistic", setStatistic)
+		makeFooterToggle(footerOverlay, "Show Ident", "ShowIdent", updateIdent)
+		makeFooterToggle(footerOverlay, "Show Element", "ShowElement", updateElementHud)
+	end)
+
 	task.spawn(function()
 		local uid = localplayer and localplayer.UserId
 		if not uid then
@@ -2147,8 +2381,22 @@ function Chloex:Window(guiconfig)
 					togglefunc.Value = not togglefunc.Value
 					togglefunc:Set(togglefunc.Value)
 				end)
-
+				
 				function togglefunc:Set(value)
+					value = value and true or false
+					togglefunc.Value = value
+					config.data[configkey] = value
+
+					if value then
+						activeToggles[toggleconfig.Title] = togglefunc
+					else
+						activeToggles[toggleconfig.Title] = nil
+					end
+
+					if updateElementHud then
+						updateElementHud()
+					end
+
 					if typeof(toggleconfig.Callback) == "function" then
 						local ok, err = pcall(function()
 							toggleconfig.Callback(value)
@@ -2157,7 +2405,7 @@ function Chloex:Window(guiconfig)
 							warn("Toggle Callback error:", err)
 						end
 					end
-					config.data[configkey] = value
+
 					if value then
 						sv.ts:Create(toggletitle, TweenInfo.new(0.2), { TextColor3 = guiconfig.Color }):Play()
 						sv.ts:Create(togglecircle, TweenInfo.new(0.2), { Position = UDim2.new(0, 15, 0, 0) }):Play()
@@ -2192,7 +2440,6 @@ function Chloex:Window(guiconfig)
 							:Play()
 					end
 				end
-
 				togglefunc:Set(togglefunc.Value)
 				countitem = countitem + 1
 				config.elements[configkey] = togglefunc
