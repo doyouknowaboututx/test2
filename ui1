@@ -1222,64 +1222,6 @@ function Chloex:Window(guiconfig)
 
 	local footerOverlay
 
-	local listeningKey = false
-
-	local keybindrow = instance.textbutton(footerOverlay)
-	keybindrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	keybindrow.BackgroundTransparency = 0.93
-	keybindrow.BorderSizePixel = 0
-	keybindrow.Size = UDim2.new(1, 0, 0, 30)
-	keybindrow.Text = ""
-	instance.uicorner(keybindrow).CornerRadius = UDim.new(0, 5)
-
-	local keylabel = instance.textlabel(keybindrow)
-	keylabel.BackgroundTransparency = 1
-	keylabel.Font = Enum.Font.GothamBold
-	keylabel.Text = "Set Keybind"
-	keylabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	keylabel.TextSize = 12
-	keylabel.TextXAlignment = Enum.TextXAlignment.Left
-	keylabel.Position = UDim2.new(0, 8, 0, 0)
-	keylabel.Size = UDim2.new(1, -80, 1, 0)
-
-	local keyvalue = instance.textlabel(keybindrow)
-	keyvalue.BackgroundTransparency = 1
-	keyvalue.Font = Enum.Font.GothamBold
-	keyvalue.Text = "[ " .. togglekey.Name .. " ]"
-	keyvalue.TextColor3 = guiconfig.Color
-	keyvalue.TextSize = 12
-	keyvalue.TextXAlignment = Enum.TextXAlignment.Right
-	keyvalue.Position = UDim2.new(1, -75, 0, 0)
-	keyvalue.Size = UDim2.new(0, 70, 1, 0)
-
-	keybindrow.Activated:Connect(function()
-		if listeningKey then
-			return
-		end
-
-		listeningKey = true
-		keyvalue.Text = "[ Press... ]"
-	end)
-
-	sv.uis.InputBegan:Connect(function(input, gameProcessed)
-		if gameProcessed or not listeningKey then
-			return
-		end
-
-		if input.UserInputType ~= Enum.UserInputType.Keyboard then
-			return
-		end
-
-		listeningKey = false
-
-		togglekey = input.KeyCode
-		config.data.ToggleKey = input.KeyCode.Name
-
-		keyvalue.Text = "[ " .. input.KeyCode.Name .. " ]"
-
-		chloex("Toggle Keybind changed to " .. input.KeyCode.Name, 3, Color3.fromRGB(100, 255, 100))
-	end)
-
 	function makeFooterToggle(parent, text, key, callback)
 		local btn = instance.textbutton(parent)
 		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1512,7 +1454,7 @@ function Chloex:Window(guiconfig)
 		end)
 	end)
 
-	local togglekey = Enum.KeyCode[config.data.ToggleKey or "F3"] or Enum.KeyCode.F3
+	local togglekey = Enum.KeyCode.F3
 	sv.uis.InputBegan:Connect(function(input, gpe)
 		if gpe then
 			return
