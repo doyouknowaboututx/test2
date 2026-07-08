@@ -3100,7 +3100,7 @@ function Chloex:Window(guiconfig)
 				function dropdownfunc:AddOption(option)
 					local label, desc, img, value = parseOption(option)
 					local useAdvanced = dropdownconfig.Advanced and (desc or img)
-					local height = useAdvanced and 46 or 30
+					local height = useAdvanced and 40 or 30
 					local leftPadding = img and 42 or 8
 					local textX = useAdvanced and math.max(8, leftPadding - 10) or leftPadding
 
@@ -3134,7 +3134,7 @@ function Chloex:Window(guiconfig)
 					optiontext.Text = label
 					optiontext.TextSize = 13
 					optiontext.TextColor3 = Color3.fromRGB(230, 230, 230)
-					optiontext.Position = UDim2.new(0, textX, 0, 8)
+					optiontext.Position = UDim2.new(0, textX, 0, 5)
 					optiontext.Size = UDim2.new(1, -(textX + 20), 0, 13)
 					optiontext.BackgroundTransparency = 1
 					optiontext.TextXAlignment = Enum.TextXAlignment.Left
@@ -3148,8 +3148,8 @@ function Chloex:Window(guiconfig)
 						optiondesc.TextSize = 11
 						optiondesc.TextTransparency = 0.5
 						optiondesc.TextColor3 = Color3.fromRGB(255, 255, 255)
-						optiondesc.Position = UDim2.new(0, textX, 0, 24)
-						optiondesc.Size = UDim2.new(1, -(textX + 20), 0, 12)
+						optiondesc.Position = UDim2.new(0, textX, 0, 17)
+						optiondesc.Size = UDim2.new(1, -(textX + 20), 0, 11)
 						optiondesc.BackgroundTransparency = 1
 						optiondesc.TextXAlignment = Enum.TextXAlignment.Left
 						optiondesc.TextTruncate = Enum.TextTruncate.AtEnd
@@ -3208,7 +3208,7 @@ function Chloex:Window(guiconfig)
 							local v = drop:GetAttribute("RealValue")
 							local selected = dropdownconfig.Multi and table.find(dropdownfunc.Value, v)
 								or dropdownfunc.Value == v
-							local selectedHeight = drop.Size.Y.Offset > 30 and 30 or 12
+							local selectedHeight = drop.Size.Y.Offset > 30 and 24 or 12
 
 							if selected then
 								sv.ts
