@@ -965,7 +965,7 @@ function Chloex:Window(guiconfig)
 	uilistlayout.Padding = UDim.new(0, 3)
 	uilistlayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-	function updatesize1()
+	local function updatesize1()
 		scrolltab.CanvasSize = UDim2.new(0, 0, 0, uilistlayout.AbsoluteContentSize.Y)
 	end
 
@@ -1050,14 +1050,14 @@ function Chloex:Window(guiconfig)
 	footerclick.Size = UDim2.new(1, 0, 1, 0)
 	footerclick.ZIndex = 20
 
-	function formatTime(sec)
+	local function formatTime(sec)
 		local h = math.floor(sec / 3600)
 		local m = math.floor((sec % 3600) / 60)
 		local s = math.floor(sec % 60)
 		return string.format("%dh %dm %ds", h, m, s)
 	end
 
-	function updateIdent()
+	local function updateIdent()
 		if useroptions.ShowIdent then
 			username.Text = "Welcome, " .. rawname
 		else
@@ -1065,7 +1065,7 @@ function Chloex:Window(guiconfig)
 		end
 	end
 
-	function updateElementHud()
+	local function updateElementHud()
 		if not useroptions.ShowElement then
 			if elementHud then
 				elementHud:Destroy()
@@ -1192,7 +1192,7 @@ function Chloex:Window(guiconfig)
 		end)
 	end
 
-	function setStatistic(state)
+	local function setStatistic(state)
 		footerstat.Visible = state
 
 		if statConn then
@@ -1222,7 +1222,7 @@ function Chloex:Window(guiconfig)
 
 	local footerOverlay
 
-	function makeFooterToggle(parent, text, key, callback)
+	local function makeFooterToggle(parent, text, key, callback)
 		local btn = instance.textbutton(parent)
 		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		btn.BackgroundTransparency = 0.93
@@ -1249,7 +1249,7 @@ function Chloex:Window(guiconfig)
 		mark.Position = UDim2.new(1, -38, 0, 0)
 		mark.Size = UDim2.new(0, 30, 1, 0)
 
-		function refresh()
+		local function refresh()
 			label.Text = text
 			mark.Text = useroptions[key] and "ON" or "OFF"
 		end
@@ -1314,7 +1314,7 @@ function Chloex:Window(guiconfig)
 	decideframe2.AnchorPoint = Vector2.new(0, 1)
 	decideframe2.Size = UDim2.new(1, 0, 0, 1)
 
-	function updateseparator()
+	local function updateseparator()
 		decideframe2.Position = UDim2.new(0, 0, 1, -userfooter.AbsoluteSize.Y)
 	end
 
@@ -1495,7 +1495,7 @@ function Chloex:Window(guiconfig)
 		local dragging = false
 		local dragstart, startpos
 
-		function update(input)
+		local function update(input)
 			local delta = input.Position - dragstart
 			mainbutton.Position =
 				UDim2.new(startpos.X.Scale, startpos.X.Offset + delta.X, startpos.Y.Scale, startpos.Y.Offset + delta.Y)
@@ -1683,7 +1683,7 @@ function Chloex:Window(guiconfig)
 	resultlayout.Padding = UDim.new(0, 5)
 	resultlayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-	function refreshSearch()
+	local function refreshSearch()
 		for _, v in ipairs(resultscroll:GetChildren()) do
 			if not v:IsA("UIListLayout") then
 				v:Destroy()
@@ -1985,13 +1985,13 @@ function Chloex:Window(guiconfig)
 
 			local opensection = false
 
-			function updatesizescroll()
+			local function updatesizescroll()
 				scrollayers.CanvasSize = UDim2.new(0, 0, 0, uilistlayout1.AbsoluteContentSize.Y)
 			end
 
 			uilistlayout1:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updatesizescroll)
 
-			function updatesizesection()
+			local function updatesizesection()
 				if not opensection then
 					return
 				end
@@ -2041,7 +2041,7 @@ function Chloex:Window(guiconfig)
 			local countitem = 0
 			local currentSubSection = nil
 
-			function registerSearchItem(title, object)
+			local function registerSearchItem(title, object)
 				title = tostring(title or "Item")
 
 				local path = tabconfig.Name .. "/" .. sectiontitletext
@@ -2147,7 +2147,7 @@ function Chloex:Window(guiconfig)
 					end
 				end
 
-				function updatesize()
+				local function updatesize()
 					local totalheight = paragraphcontent.TextBounds.Y + 33
 					if paragraphbutton then
 						totalheight = totalheight + paragraphbutton.Size.Y.Offset + 5
@@ -2519,7 +2519,7 @@ function Chloex:Window(guiconfig)
 					sliderconfig.Default = tonumber(config.data[configkey]) or sliderconfig.Default
 				end
 
-				function getprecision(step)
+				local function getprecision(step)
 					local s = tostring(step)
 					if s:find("e") or s:find("E") then
 						s = string.format("%.12f", step):gsub("0+$", ""):gsub("%.$", "")
@@ -2531,12 +2531,12 @@ function Chloex:Window(guiconfig)
 
 				local precision = tonumber(sliderconfig.Precision) or getprecision(sliderconfig.Increment)
 
-				function roundtoincrement(value)
+				local function roundtoincrement(value)
 					local step = sliderconfig.Increment
 					return math.floor((value / step) + 0.5) * step
 				end
 
-				function formatnumber(value)
+				local function formatnumber(value)
 					value = tonumber(string.format("%." .. precision .. "f", value)) or 0
 
 					if precision > 0 then
@@ -2546,7 +2546,7 @@ function Chloex:Window(guiconfig)
 					return tostring(math.floor(value + 0.5))
 				end
 
-				function clampvalue(value)
+				local function clampvalue(value)
 					value = tonumber(value) or sliderconfig.Min
 					value = math.clamp(value, sliderconfig.Min, sliderconfig.Max)
 					value = roundtoincrement(value)
@@ -2675,7 +2675,7 @@ function Chloex:Window(guiconfig)
 				local dragging = false
 				local setting = false
 
-				function getpercent(value)
+				local function getpercent(value)
 					if sliderconfig.Max == sliderconfig.Min then
 						return 0
 					end
@@ -2683,12 +2683,12 @@ function Chloex:Window(guiconfig)
 					return math.clamp((value - sliderconfig.Min) / (sliderconfig.Max - sliderconfig.Min), 0, 1)
 				end
 
-				function updatebubble(percent, value)
+				local function updatebubble(percent, value)
 					bubble.Position = UDim2.new(percent, 0, 0, -10)
 					bubbletext.Text = tostring(value)
 				end
 
-				function showbubble()
+				local function showbubble()
 					bubble.Visible = true
 
 					sv.ts
@@ -2705,7 +2705,7 @@ function Chloex:Window(guiconfig)
 						:Play()
 				end
 
-				function hidebubble()
+				local function hidebubble()
 					sv.ts
 						:Create(slidercircle, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 							Size = UDim2.new(0, 12, 0, 12),
@@ -2725,7 +2725,7 @@ function Chloex:Window(guiconfig)
 					end)
 				end
 
-				function setfromx(x)
+				local function setfromx(x)
 					local percent = math.clamp((x - sliderframe.AbsolutePosition.X) / sliderframe.AbsoluteSize.X, 0, 1)
 					local value = sliderconfig.Min + ((sliderconfig.Max - sliderconfig.Min) * percent)
 
@@ -3281,7 +3281,7 @@ function Chloex:Window(guiconfig)
 				local selectedconfigname = config.current or ""
 				local configdropdown
 
-				function setdropdownlist(dropdown, list)
+				local function setdropdownlist(dropdown, list)
 					if dropdown and dropdown.Refresh then
 						dropdown:Refresh(list)
 					elseif dropdown and dropdown.SetValues then
@@ -3289,7 +3289,7 @@ function Chloex:Window(guiconfig)
 					end
 				end
 
-				function refreshconfiglist()
+				local function refreshconfiglist()
 					setdropdownlist(configdropdown, config:getlist())
 				end
 
@@ -3298,7 +3298,7 @@ function Chloex:Window(guiconfig)
 					Content = "Save: " .. (config.current or "None"),
 				})
 
-				function updatestatus()
+				local function updatestatus()
 					saveparagraph:SetContent("Save: " .. (config.current or "None"))
 				end
 
