@@ -2921,6 +2921,7 @@ function Chloex:Window(guiconfig)
 				dropdownconfig = dropdownconfig or {}
 				dropdownconfig.Title = dropdownconfig.Title or "Title"
 				dropdownconfig.Multi = dropdownconfig.Multi or false
+				dropdownconfig.Advanced = dropdownconfig.Advanced or false
 				dropdownconfig.Options = dropdownconfig.Options or {}
 				dropdownconfig.Default = dropdownconfig.Default or (dropdownconfig.Multi and {} or nil)
 				dropdownconfig.Callback = dropdownconfig.Callback or function() end
@@ -2931,6 +2932,35 @@ function Chloex:Window(guiconfig)
 				end
 
 				local dropdownfunc = { Value = dropdownconfig.Default, Options = dropdownconfig.Options }
+
+				local function parseOption(option)
+					local label, desc, img, value
+
+					if typeof(option) == "table" then
+						if option.Label and option.Value ~= nil then
+							label = tostring(option.Label)
+							value = option.Value
+							desc = option.Description or option.Desc or option[2]
+							img = option.Image or option.Icon or option[3]
+						else
+							label = tostring(option[1] or option.Title or option.Name or "Option")
+							desc = option[2] or option.Description or option.Desc
+							img = option[3] or option.Image or option.Icon
+							value = option.Value ~= nil and option.Value or label
+						end
+					else
+						label = tostring(option)
+						value = option
+					end
+
+					if img and type(img) == "number" then
+						img = "rbxassetid://" .. tostring(img)
+					elseif img and type(img) == "string" and img ~= "" and not img:find("rbxassetid://") then
+						img = "rbxassetid://" .. img
+					end
+
+					return label, desc, img, value
+				end
 
 				local dropdown = instance.frame(sectionadd)
 				dropdown.Name = "Dropdown"
@@ -2997,7 +3027,9 @@ function Chloex:Window(guiconfig)
 						droppagelayout:JumpToIndex(selectoptionsframe.LayoutOrder)
 						sv.ts:Create(moreblur, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
 						sv.ts
-							:Create(dropdownselect, TweenInfo.new(0.3), { Position = UDim2.new(1, -11, 0.5, 0) })
+							:Create(dropdownselect, TweenInfo.new(0.3), {
+								Position = UDim2.new(1, -11, 0.5, 0),
+							})
 							:Play()
 					end
 				end)
@@ -3043,7 +3075,12 @@ function Chloex:Window(guiconfig)
 					for _, option in ipairs(scrollselect:GetChildren()) do
 						if option.Name == "Option" and option:FindFirstChild("OptionText") then
 							local text = string.lower(option.OptionText.Text)
-							option.Visible = (query == "") or string.find(text, query, 1, true)
+							local desc = option:FindFirstChild("OptionDesc")
+							local descText = desc and string.lower(desc.Text) or ""
+
+							option.Visible = query == ""
+								or string.find(text, query, 1, true)
+								or string.find(descText, query, 1, true)
 						end
 					end
 					scrollselect.CanvasSize = UDim2.new(0, 0, 0, uilistlayout.AbsoluteContentSize.Y)
@@ -3061,19 +3098,15 @@ function Chloex:Window(guiconfig)
 				end
 
 				function dropdownfunc:AddOption(option)
-					local label, value
-					if typeof(option) == "table" and option.Label and option.Value ~= nil then
-						label = tostring(option.Label)
-						value = option.Value
-					else
-						label = tostring(option)
-						value = option
-					end
+					local label, desc, img, value = parseOption(option)
+					local useAdvanced = dropdownconfig.Advanced and (desc or img)
+					local height = useAdvanced and 46 or 30
+					local leftPadding = img and 42 or 8
 
 					local optionframe = instance.frame(scrollselect)
 					optionframe.Name = "Option"
 					optionframe.BackgroundTransparency = 1
-					optionframe.Size = UDim2.new(1, 0, 0, 30)
+					optionframe.Size = UDim2.new(1, 0, 0, height)
 
 					instance.uicorner(optionframe).CornerRadius = UDim.new(0, 3)
 
@@ -3083,16 +3116,42 @@ function Chloex:Window(guiconfig)
 					optionbutton.Size = UDim2.new(1, 0, 1, 0)
 					optionbutton.Text = ""
 
+					if img then
+						local icon = instance.imagelabel(optionframe)
+						icon.Name = "OptionIcon"
+						icon.Image = img
+						icon.BackgroundTransparency = 1
+						icon.Position = UDim2.new(0, 8, 0.5, -14)
+						icon.Size = UDim2.new(0, 28, 0, 28)
+						icon.ScaleType = Enum.ScaleType.Fit
+						instance.uicorner(icon).CornerRadius = UDim.new(0, 5)
+					end
+
 					local optiontext = instance.textlabel(optionframe)
 					optiontext.Name = "OptionText"
 					optiontext.Font = Enum.Font.GothamBold
 					optiontext.Text = label
 					optiontext.TextSize = 13
 					optiontext.TextColor3 = Color3.fromRGB(230, 230, 230)
-					optiontext.Position = UDim2.new(0, 8, 0, 8)
-					optiontext.Size = UDim2.new(1, -100, 0, 13)
+					optiontext.Position = UDim2.new(0, leftPadding, 0, useAdvanced and 8 or 8)
+					optiontext.Size = UDim2.new(1, -(leftPadding + 20), 0, 13)
 					optiontext.BackgroundTransparency = 1
 					optiontext.TextXAlignment = Enum.TextXAlignment.Left
+					optiontext.TextTruncate = Enum.TextTruncate.AtEnd
+
+					if useAdvanced and desc then
+						local optiondesc = instance.textlabel(optionframe)
+						optiondesc.Name = "OptionDesc"
+						optiondesc.Font = Enum.Font.Gotham
+						optiondesc.Text = tostring(desc)
+						optiondesc.TextSize = 10
+						optiondesc.TextColor3 = Color3.fromRGB(150, 150, 150)
+						optiondesc.Position = UDim2.new(0, leftPadding, 0, 24)
+						optiondesc.Size = UDim2.new(1, -(leftPadding + 20), 0, 12)
+						optiondesc.BackgroundTransparency = 1
+						optiondesc.TextXAlignment = Enum.TextXAlignment.Left
+						optiondesc.TextTruncate = Enum.TextTruncate.AtEnd
+					end
 
 					optionframe:SetAttribute("RealValue", value)
 
@@ -3112,6 +3171,7 @@ function Chloex:Window(guiconfig)
 					optionbutton.Activated:Connect(function()
 						if dropdownconfig.Multi then
 							dropdownfunc.Value = type(dropdownfunc.Value) == "table" and dropdownfunc.Value or {}
+
 							if not table.find(dropdownfunc.Value, value) then
 								table.insert(dropdownfunc.Value, value)
 							else
@@ -3125,6 +3185,7 @@ function Chloex:Window(guiconfig)
 						else
 							dropdownfunc.Value = value
 						end
+
 						dropdownfunc:Set(dropdownfunc.Value)
 					end)
 				end
@@ -3139,6 +3200,7 @@ function Chloex:Window(guiconfig)
 					config.data[configkey] = dropdownfunc.Value
 
 					local texts = {}
+
 					for _, drop in ipairs(scrollselect:GetChildren()) do
 						if drop.Name == "Option" and drop:FindFirstChild("OptionText") then
 							local v = drop:GetAttribute("RealValue")
@@ -3147,25 +3209,46 @@ function Chloex:Window(guiconfig)
 
 							if selected then
 								sv.ts
-									:Create(drop.ChooseFrame, TweenInfo.new(0.2), { Size = UDim2.new(0, 1, 0, 12) })
+									:Create(drop.ChooseFrame, TweenInfo.new(0.2), {
+										Size = UDim2.new(0, 1, 0, 12),
+									})
 									:Play()
+
 								if drop.ChooseFrame:FindFirstChild("UIStroke") then
 									sv.ts
-										:Create(drop.ChooseFrame.UIStroke, TweenInfo.new(0.2), { Transparency = 0 })
+										:Create(drop.ChooseFrame.UIStroke, TweenInfo.new(0.2), {
+											Transparency = 0,
+										})
 										:Play()
 								end
-								sv.ts:Create(drop, TweenInfo.new(0.2), { BackgroundTransparency = 0.935 }):Play()
+
+								sv.ts
+									:Create(drop, TweenInfo.new(0.2), {
+										BackgroundTransparency = 0.935,
+									})
+									:Play()
+
 								table.insert(texts, drop.OptionText.Text)
 							else
 								sv.ts
-									:Create(drop.ChooseFrame, TweenInfo.new(0.1), { Size = UDim2.new(0, 0, 0, 0) })
+									:Create(drop.ChooseFrame, TweenInfo.new(0.1), {
+										Size = UDim2.new(0, 0, 0, 0),
+									})
 									:Play()
+
 								if drop.ChooseFrame:FindFirstChild("UIStroke") then
 									sv.ts
-										:Create(drop.ChooseFrame.UIStroke, TweenInfo.new(0.1), { Transparency = 0.999 })
+										:Create(drop.ChooseFrame.UIStroke, TweenInfo.new(0.1), {
+											Transparency = 0.999,
+										})
 										:Play()
 								end
-								sv.ts:Create(drop, TweenInfo.new(0.1), { BackgroundTransparency = 0.999 }):Play()
+
+								sv.ts
+									:Create(drop, TweenInfo.new(0.1), {
+										BackgroundTransparency = 0.999,
+									})
+									:Play()
 							end
 						end
 					end
@@ -3178,7 +3261,7 @@ function Chloex:Window(guiconfig)
 						if dropdownconfig.Multi then
 							dropdownconfig.Callback(dropdownfunc.Value)
 						else
-							local str = (dropdownfunc.Value ~= nil) and tostring(dropdownfunc.Value) or ""
+							local str = dropdownfunc.Value ~= nil and tostring(dropdownfunc.Value) or ""
 							dropdownconfig.Callback(str)
 						end
 					end
@@ -3196,9 +3279,11 @@ function Chloex:Window(guiconfig)
 					newlist = newlist or {}
 					selecting = selecting or (dropdownconfig.Multi and {} or nil)
 					dropdownfunc:Clear()
+
 					for _, v in ipairs(newlist) do
 						dropdownfunc:AddOption(v)
 					end
+
 					dropdownfunc.Options = newlist
 					dropdownfunc:Set(selecting)
 				end
@@ -3206,9 +3291,11 @@ function Chloex:Window(guiconfig)
 				function dropdownfunc:Refresh(newlist)
 					newlist = newlist or {}
 					dropdownfunc:Clear()
+
 					for _, v in ipairs(newlist) do
 						dropdownfunc:AddOption(v)
 					end
+
 					dropdownfunc.Options = newlist
 					dropdownfunc:Set(dropdownconfig.Multi and {} or nil)
 				end
