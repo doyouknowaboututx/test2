@@ -1638,22 +1638,18 @@ function Chloex:Window(guiconfig)
 	droppagelayout.FillDirection = Enum.FillDirection.Vertical
 	droppagelayout.Archivable = false
 
-	local searchOpen = false
+	local searchlayer = instance.frame(layers)
+	searchlayer.Name = "SearchLayer"
+	searchlayer.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
+	searchlayer.BorderSizePixel = 0
+	searchlayer.BackgroundTransparency = 0.1
+	searchlayer.Size = UDim2.new(1, 0, 1, 0)
+	searchlayer.Visible = false
+	searchlayer.ZIndex = 60
 
-	local searchholder = instance.frame(top)
-	searchholder.Name = "SearchHolder"
-	searchholder.AnchorPoint = Vector2.new(1, 0.5)
-	searchholder.Position = UDim2.new(1, -86, 0.5, 0)
-	searchholder.Size = UDim2.new(0, 0, 0, 28)
-	searchholder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	searchholder.BackgroundTransparency = 0.92
-	searchholder.BorderSizePixel = 0
-	searchholder.ClipsDescendants = true
-	searchholder.ZIndex = 70
-	searchholder.Visible = false
-	instance.uicorner(searchholder).CornerRadius = UDim.new(0, 5)
+	instance.uicorner(searchlayer).CornerRadius = UDim.new(0, 6)
 
-	local searchbox = instance.textbox(searchholder)
+	local searchbox = instance.textbox(searchlayer)
 	searchbox.Name = "SearchBox"
 	searchbox.PlaceholderText = "Search Element..."
 	searchbox.Text = ""
@@ -1661,71 +1657,59 @@ function Chloex:Window(guiconfig)
 	searchbox.TextSize = 13
 	searchbox.TextColor3 = Color3.fromRGB(255, 255, 255)
 	searchbox.PlaceholderColor3 = Color3.fromRGB(160, 160, 160)
-	searchbox.BackgroundTransparency = 1
+	searchbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	searchbox.BackgroundTransparency = 0.92
 	searchbox.BorderSizePixel = 0
-	searchbox.Position = UDim2.new(0, 12, 0, 0)
-	searchbox.Size = UDim2.new(1, -18, 1, 0)
+	searchbox.AnchorPoint = Vector2.new(1, 0)
+	searchbox.Position = UDim2.new(1, -15, 0, 10)
+	searchbox.Size = UDim2.new(0, 190, 0, 30)
 	searchbox.ClearTextOnFocus = false
 	searchbox.TextXAlignment = Enum.TextXAlignment.Left
-	searchbox.ZIndex = 71
+	searchbox.ZIndex = 61
 
-	local resultscroll = instance.scrollingframe(main)
-	resultscroll.Name = "SearchResultScroll"
-	resultscroll.AnchorPoint = Vector2.new(1, 0)
-	resultscroll.Position = UDim2.new(1, -86, 0, 42)
-	resultscroll.Size = UDim2.new(0, 220, 0, 180)
-	resultscroll.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
-	resultscroll.BackgroundTransparency = 0.08
+	instance.uicorner(searchbox).CornerRadius = UDim.new(0, 5)
+
+	local searchboxpad = instance.uipadding(searchbox)
+	searchboxpad.PaddingLeft = UDim.new(0, 32)
+	searchboxpad.PaddingRight = UDim.new(0, 8)
+
+	local searchboxicon = instance.imagelabel(searchbox)
+	searchboxicon.Name = "SearchIcon"
+	searchboxicon.Image = "rbxassetid://8447654914"
+	searchboxicon.BackgroundTransparency = 1
+	searchboxicon.ImageTransparency = 0.25
+	searchboxicon.AnchorPoint = Vector2.new(0, 0.5)
+	searchboxicon.Position = UDim2.new(0, 9, 0.5, 0)
+	searchboxicon.Size = UDim2.new(0, 14, 0, 14)
+	searchboxicon.ZIndex = 62
+
+	local resultscroll = instance.scrollingframe(searchlayer)
+	resultscroll.Name = "ResultScroll"
+	resultscroll.BackgroundTransparency = 1
 	resultscroll.BorderSizePixel = 0
+	resultscroll.Position = UDim2.new(0, 10, 0, 50)
+	resultscroll.Size = UDim2.new(1, -20, 1, -60)
 	resultscroll.ScrollBarThickness = 3
 	resultscroll.ScrollBarImageTransparency = 0.5
 	resultscroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-	resultscroll.Visible = false
-	resultscroll.ZIndex = 70
-	instance.uicorner(resultscroll).CornerRadius = UDim.new(0, 6)
+	resultscroll.ZIndex = 61
 
 	local resultlayout = instance.uilistlayout(resultscroll)
 	resultlayout.Padding = UDim.new(0, 5)
 	resultlayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-	local resultpad = instance.uipadding(resultscroll)
-	resultpad.PaddingTop = UDim.new(0, 7)
-	resultpad.PaddingBottom = UDim.new(0, 7)
-	resultpad.PaddingLeft = UDim.new(0, 7)
-	resultpad.PaddingRight = UDim.new(0, 7)
-
-	local function closeSearch()
-		searchOpen = false
-		searchbox:ReleaseFocus()
-		searchbox.Text = ""
-		resultscroll.Visible = false
-
-		local tw = sv.ts:Create(
-			searchholder,
-			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-			{ Size = UDim2.new(0, 0, 0, 28) }
-		)
-
-		tw:Play()
-		tw.Completed:Wait()
-		searchholder.Visible = false
-	end
-
 	local function refreshSearch()
 		for _, v in ipairs(resultscroll:GetChildren()) do
-			if not v:IsA("UIListLayout") and not v:IsA("UIPadding") then
+			if not v:IsA("UIListLayout") then
 				v:Destroy()
 			end
 		end
 
 		local keyword = string.lower(searchbox.Text or "")
-		if keyword == "" or not searchOpen then
-			resultscroll.Visible = false
+		if keyword == "" then
 			resultscroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 			return
 		end
-
-		resultscroll.Visible = true
 
 		for _, data in ipairs(searchItems) do
 			if
@@ -1739,7 +1723,8 @@ function Chloex:Window(guiconfig)
 				item.BackgroundTransparency = 0.935
 				item.BorderSizePixel = 0
 				item.Size = UDim2.new(1, -6, 0, 46)
-				item.ZIndex = 72
+				item.ZIndex = 62
+
 				instance.uicorner(item).CornerRadius = UDim.new(0, 5)
 
 				local title = instance.textlabel(item)
@@ -1752,7 +1737,7 @@ function Chloex:Window(guiconfig)
 				title.BackgroundTransparency = 1
 				title.Position = UDim2.new(0, 10, 0, 7)
 				title.Size = UDim2.new(1, -20, 0, 14)
-				title.ZIndex = 73
+				title.ZIndex = 63
 
 				local path = instance.textlabel(item)
 				path.Name = "Path"
@@ -1764,10 +1749,11 @@ function Chloex:Window(guiconfig)
 				path.BackgroundTransparency = 1
 				path.Position = UDim2.new(0, 10, 0, 25)
 				path.Size = UDim2.new(1, -20, 0, 13)
-				path.ZIndex = 73
+				path.ZIndex = 63
 
 				item.Activated:Connect(function()
-					closeSearch()
+					searchlayer.Visible = false
+					searchbox.Text = ""
 
 					layerspagelayout:JumpToIndex(data.TabIndex)
 
@@ -1789,35 +1775,17 @@ function Chloex:Window(guiconfig)
 		end
 
 		task.wait()
-		resultscroll.CanvasSize = UDim2.new(0, 0, 0, resultlayout.AbsoluteContentSize.Y + 14)
-
-		if resultlayout.AbsoluteContentSize.Y <= 0 then
-			resultscroll.Visible = false
-		end
+		resultscroll.CanvasSize = UDim2.new(0, 0, 0, resultlayout.AbsoluteContentSize.Y + 5)
 	end
 
 	searchbox:GetPropertyChangedSignal("Text"):Connect(refreshSearch)
 
 	search.Activated:Connect(function()
-		if searchOpen then
-			closeSearch()
-			return
+		searchlayer.Visible = not searchlayer.Visible
+		if searchlayer.Visible then
+			searchbox:CaptureFocus()
+			refreshSearch()
 		end
-
-		searchOpen = true
-		searchholder.Visible = true
-
-		sv.ts
-			:Create(
-				searchholder,
-				TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.new(0, 220, 0, 28) }
-			)
-			:Play()
-
-		task.wait(0.05)
-		searchbox:CaptureFocus()
-		refreshSearch()
 	end)
 
 	function tabs:AddTab(tabconfig)
