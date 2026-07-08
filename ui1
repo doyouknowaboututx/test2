@@ -1087,7 +1087,47 @@ function Chloex:Window(guiconfig)
 			mainhud.BackgroundColor3 = Color3.fromRGB(1, 60, 75)
 			mainhud.BackgroundTransparency = 0.1
 			mainhud.BorderSizePixel = 0
+			mainhud.Active = true
 			instance.uicorner(mainhud).CornerRadius = UDim.new(0, 6)
+
+			local dragging = false
+			local dragstart
+			local startpos
+
+			mainhud.InputBegan:Connect(function(input)
+				if
+					input.UserInputType == Enum.UserInputType.MouseButton1
+					or input.UserInputType == Enum.UserInputType.Touch
+				then
+					dragging = true
+					dragstart = input.Position
+					startpos = mainhud.Position
+
+					input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							dragging = false
+						end
+					end)
+				end
+			end)
+
+			sv.uis.InputChanged:Connect(function(input)
+				if
+					dragging
+					and (
+						input.UserInputType == Enum.UserInputType.MouseMovement
+						or input.UserInputType == Enum.UserInputType.Touch
+					)
+				then
+					local delta = input.Position - dragstart
+					mainhud.Position = UDim2.new(
+						startpos.X.Scale,
+						startpos.X.Offset + delta.X,
+						startpos.Y.Scale,
+						startpos.Y.Offset + delta.Y
+					)
+				end
+			end)
 
 			local scroll = instance.scrollingframe(mainhud)
 			scroll.Name = "Scroll"
@@ -1104,6 +1144,7 @@ function Chloex:Window(guiconfig)
 		end
 
 		local scroll = elementHud.Main.Scroll
+
 		for _, v in ipairs(scroll:GetChildren()) do
 			if not v:IsA("UIListLayout") then
 				v:Destroy()
@@ -1144,8 +1185,11 @@ function Chloex:Window(guiconfig)
 			end)
 		end
 
-		task.wait()
-		scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 8)
+		task.defer(function()
+			if scroll and scroll:FindFirstChild("UIListLayout") then
+				scroll.CanvasSize = UDim2.new(0, 0, 0, scroll.UIListLayout.AbsoluteContentSize.Y + 8)
+			end
+		end)
 	end
 
 	local function setStatistic(state)
@@ -1280,6 +1324,16 @@ function Chloex:Window(guiconfig)
 	decideframe2.Position = UDim2.new(0, 0, 1, -userfooter.Size.Y.Offset)
 
 	function guifunc:DestroyGui()
+		if elementHud then
+			elementHud:Destroy()
+			elementHud = nil
+		end
+
+		if statConn then
+			statConn:Disconnect()
+			statConn = nil
+		end
+
 		if sv.coregui:FindFirstChild("Chloeex") then
 			chloeex:Destroy()
 		end
@@ -2381,7 +2435,7 @@ function Chloex:Window(guiconfig)
 					togglefunc.Value = not togglefunc.Value
 					togglefunc:Set(togglefunc.Value)
 				end)
-				
+
 				function togglefunc:Set(value)
 					value = value and true or false
 					togglefunc.Value = value
