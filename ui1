@@ -876,7 +876,7 @@ function Chloex:Window(guiconfig)
 	search.Size = UDim2.new(0, 25, 0, 25)
 
 	local searchicon = instance.imagelabel(search)
-	searchicon.Image = "rbxassetid://11496279085"
+	searchicon.Image = "rbxassetid://8447654914"
 	searchicon.AnchorPoint = Vector2.new(0.5, 0.5)
 	searchicon.BackgroundTransparency = 1
 	searchicon.ImageTransparency = 0.2
