@@ -1023,35 +1023,12 @@ function Chloex:Window(guiconfig)
 		ShowStatistic = false,
 		ShowIdent = false,
 		ShowElement = false,
-		ShowTabName = true,
-		ShowTabIcon = false,
 	}
 
 	local serverStart = os.clock()
 	local activeToggles = {}
 	local elementHud
 	local statConn
-
-	local tabVisuals = {}
-
-	local function updateTabsVisual()
-		for _, data in ipairs(tabVisuals) do
-			data.Label.Visible = useroptions.ShowTabName
-			data.Icon.Visible = useroptions.ShowTabIcon
-
-			if useroptions.ShowTabName and useroptions.ShowTabIcon then
-				data.Icon.Position = UDim2.new(0, 8, 0.5, 0)
-				data.Label.Position = UDim2.new(0, 32, 0, 0)
-				data.Label.Size = UDim2.new(1, -38, 1, 0)
-			elseif useroptions.ShowTabIcon then
-				data.Icon.Position = UDim2.new(0.5, 0, 0.5, 0)
-				data.Label.Visible = false
-			else
-				data.Label.Position = UDim2.new(0, 8, 0, 0)
-				data.Label.Size = UDim2.new(1, -12, 1, 0)
-			end
-		end
-	end
 
 	local footerstat = instance.textlabel(userfooter)
 	footerstat.Name = "FooterStatistic"
@@ -1318,8 +1295,6 @@ function Chloex:Window(guiconfig)
 		makeFooterToggle(footerOverlay, "Show Statistic", "ShowStatistic", setStatistic)
 		makeFooterToggle(footerOverlay, "Show Ident", "ShowIdent", updateIdent)
 		makeFooterToggle(footerOverlay, "Show Element", "ShowElement", updateElementHud)
-		makeFooterToggle(footerOverlay, "Show Tab Name", "ShowTabName", updateTabsVisual)
-		makeFooterToggle(footerOverlay, "Show Tab Icon", "ShowTabIcon", updateTabsVisual)
 	end)
 
 	task.spawn(function()
@@ -1856,25 +1831,6 @@ function Chloex:Window(guiconfig)
 		tabname.BorderSizePixel = 0
 		tabname.Size = UDim2.new(1, -10, 1, 0)
 		tabname.Position = UDim2.new(0, 10, 0, 0)
-
-		local tabicon = instance.imagelabel(tab)
-		tabicon.Name = "TabIcon"
-		tabicon.Image = "rbxassetid://" .. tostring(tabconfig.Icon or tabconfig.Image or "6023426926")
-		tabicon.BackgroundTransparency = 1
-		tabicon.ImageTransparency = 0.15
-		tabicon.AnchorPoint = Vector2.new(0, 0.5)
-		tabicon.Position = UDim2.new(0, 8, 0.5, 0)
-		tabicon.Size = UDim2.new(0, 16, 0, 16)
-		tabicon.Visible = useroptions.ShowTabIcon
-		tabicon.ZIndex = 2
-
-		table.insert(tabVisuals, {
-			Tab = tab,
-			Label = tabname,
-			Icon = tabicon,
-		})
-
-		updateTabsVisual()
 
 		if counttab == 0 then
 			layerspagelayout:JumpToIndex(0)
@@ -2960,7 +2916,7 @@ function Chloex:Window(guiconfig)
 				registerSearchItem(inputconfig.Title, inputcontainer)
 				return inputfunc
 			end
-
+			
 			function items:AddDropdown(dropdownconfig)
 				dropdownconfig = dropdownconfig or {}
 				dropdownconfig.Title = dropdownconfig.Title or "Title"
